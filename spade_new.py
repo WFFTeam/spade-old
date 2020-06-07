@@ -1,4 +1,4 @@
-#SPADE v0.1a
+#SPADE v0.2a
 
 from bs4 import BeautifulSoup
 from urllib.request import Request, urlopen
@@ -26,14 +26,25 @@ def ScrapeTitle(url):
         soup = BeautifulSoup(page.read().decode('utf-8', 'ignore'), "html.parser")
         return soup.title.text
     except Exception as error:
-        return "ERROR: " + str(error);
+        return "ERROR: " + str(error)
+
+#    except urllib.error.HTTPError as e:
+#        return ("ERROR: " + e.code)
+#    except urllib.error.URLError as e:
+#        return ("ERROR: URL_Error")
+#    except socket.timeout as e:
+#        return ("ERROR: timeout")
+
+
+
+
 
 def main():
     QueryListArg = sys.argv[1]
-#   QueryListArg = 'test2.txt'
     if QueryListArg == "":
         print("Query list file not specified in argument; aborting.")
         sys.exit()
+        
     with open(QueryListArg, 'r') as QueryList:
         lines = []
         for line in QueryList:
@@ -60,7 +71,7 @@ def main():
         #                               start = 0,    # First result to retrieve
         #                               stop = 10,  # Last result to retrieve
                                 num = 10,     # Number of results per page
-                                pause = 10.0,  # Lapse between HTTP requests
+                                pause = 3.0,  # Lapse between HTTP requests
                                 ):
                         result = []
                         title = re.sub(r'[\n\r\t]*', '', ScrapeTitle(url))
@@ -78,34 +89,35 @@ def main():
                             write = csv.writer(wr)
                             write.writerows(data)
                         print("#: " + str(result[2]) + " | " + DateTimePrint())
-                        if result[1] == "":
+                        if len(result) == 4:
                             print("!!!" + result[3])
                         else:
                             print("Title: " + result[1])
                         print("URL: " + result[0])
                         print(" ")
                         i += 1
-                        continue
-                    
-                    print("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ")
-                    files = {
-                        'sprunge': (None, open(csvPath, 'rb')),
-                    }
-                    r = requests.post('http://sprunge.us/', files=files)
-                    sprungeUsURL = r.text
-                    print("| File uploaded to sprunge.us; access URL: " + sprungeUsURL)
-                    with open(logPath, "w") as text_file:
-                        print("Search string: " + QueryInput, file=text_file)
-                        print("Results saved to: " + csvFilename, file=text_file)
-                        print("Total number of results found: " + str(i), file=text_file)
-                        print("CSV URL: " + sprungeUsURL, file=text_file)
-                    break
-                except IndexError as indexerror:
-                    print('Index error occured: ' + str(indexerror))
-                    break
-                except Exception as exception:
-                    print('Unknown error occured: ' + str(exception))
-                    break
+#                        continue
+                except IndexError as e:
+                    print('Index error occured: ' + str(e.code))
+#                   break
+#               except Exception as exception:
+#                   print('Unknown error occured: ' + str(exception))
+#                    break
+                
+                print("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ")
+                files = {
+                    'sprunge': (None, open(csvPath, 'rb')),
+                }
+                r = requests.post('http://sprunge.us/', files=files)
+                sprungeUsURL = r.text
+                print("| File uploaded to sprunge.us; access URL: " + sprungeUsURL)
+                with open(logPath, "w") as text_file:
+                    print("Search string: " + QueryInput, file=text_file)
+                    print("Results saved to: " + csvFilename, file=text_file)
+                    print("Total number of results found: " + str(i), file=text_file)
+                    print("CSV URL: " + sprungeUsURL, file=text_file)
+                break
+                
                 
                 
                 
