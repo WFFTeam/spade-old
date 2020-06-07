@@ -141,7 +141,7 @@ def main():
 #                               start = 0,    # First result to retrieve
 #                               stop = 20,    # Last result to retrieve
                                 num = 10,     # Number of results per page
-                                pause = 3.0,  # Lapse between HTTP requests
+                                pause = 4.0,  # Lapse between HTTP requests
                                 ):
                         time.sleep(0.5)
                         i += 1
