@@ -1,4 +1,4 @@
-#SPADE v0.5a
+#SPADE v0.6a
 
 from bs4 import BeautifulSoup
 from urllib.request import Request, urlopen
@@ -65,7 +65,7 @@ def QueryProgress(currentLine, numOfLines, queryInput):
     print(green(f'Fetching results for string: {queryInput}'))
 
 def ScrapeTitle(url):
-    errorUrlList = []
+    errorUrl = ""
     errorCount = 0
     try:
         hdr = {'User-Agent': 'Mozilla/5.0'}
@@ -74,13 +74,12 @@ def ScrapeTitle(url):
         soup = BeautifulSoup(page.read().decode('utf-8', 'ignore'), "html.parser")
         return soup.title.text
     except Exception as error:
-        errorUrlList.append(url)
-        errorCount += 1
-#       print(error)
-#       return error
-        return "ERROR: " + str(error)
+        errorUrl = url
+        errorNotice = error
+        errorInfo = [errorNotice,errorUrl,'ERROR']
+        return errorInfo
 
-def FileOutput(result_list, csvPath, logPath, queryInput, count):
+def FileOutput(result_list, csvPath, logPath, queryInput, count, errorCount):
     
     for i in result_list:
         data = [i]
@@ -90,14 +89,16 @@ def FileOutput(result_list, csvPath, logPath, queryInput, count):
             write.writerows(data)
     
     with open(logPath, "w") as text_file:
-        print("SPADE v0.5a", file=text_file)
+        print("SPADE v0.6a", file=text_file)
         print("Search string: " + queryInput, file=text_file)
         print("Results saved to: " + csvPath, file=text_file)
         print("Total number of results found: " + str(count), file=text_file)
+        print("Number of errors:" + str(errorCount), file=text_file)
     print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
     print(green("Saved results to: " + csvPath))
     print(green("Saved log to: " + logPath))
-
+    print(red("Number of errors:" + str(errorCount)))
+    
 def SprungeUpload(csvPath, logPath):
     files = {
         'sprunge': (None, open(csvPath, 'rb')),
@@ -115,10 +116,11 @@ def main():
     parser.add_argument("--list", "-l", help="Set file to read URLs from")
     parser.add_argument("--query", "-q", help="Set Google search query")
     args = parser.parse_args()
+### LOAD LIST OF QUERUES
     if args.list:
         QueryListArg = args.list
+        numOfLines = sum(1 for line in open(QueryListArg, 'r'))
         with open(QueryListArg, 'r') as QueryList:
-            numOfLines = len(QueryListArg)
             lines = []
             currentLine = 0
             for line in QueryList:
@@ -139,7 +141,7 @@ def main():
 #                               tld = 'com',  # The top level domain
 #                               lang = 'en',  # The language
 #                               start = 0,    # First result to retrieve
-#                               stop = 20,    # Last result to retrieve
+#                               stop = 10,    # Last result to retrieve
                                 num = 10,     # Number of results per page
                                 pause = 4.0,  # Lapse between HTTP requests
                                 ):
@@ -150,7 +152,8 @@ def main():
                         url_list.append(result)
                         clear()
                         print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
-                        print(green("SPADE v0.5a"))
+                        print(green("SPADE v0.6a"))
+                        print(cyan("Searching google and collecting URL addresses"))
                         QueryProgress(currentLine, numOfLines, queryInput)
                         print(yellow(f'No. {i} --- {result[1]}'))
                         if progBarMult == 100:
@@ -170,24 +173,30 @@ def main():
                 except HTTPError as err:
                     print(red(err))
                     countdown(0,5)
-    #               break
                 print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
+                errorCount = 0
                 for i in url_list:
                     numOfURL = len(url_list)
                     count = i[0]
                     url = i[1]
-                    title = re.sub(r'[\n\r\t]*', '', ScrapeTitle(url))
+                    if 'ERROR' in ScrapeTitle(url):
+
+                        title = ScrapeTitle(url)[0]
+                        errorUrl = ScrapeTitle(url)[1]
+                        errorCount += 1
+                        titleColor = red(f'Error: {title}')
+                    else:
+                        title = re.sub(r'[\n\r\t]*', '', str(ScrapeTitle(url)))
+                        titleColor = yellow(f'Title: {title}')
                     result = ([url, title])
-                    result_list.append(result)
                     print(yellow(str(count) + " of " + str(numOfURL) + " URLs | " + DateTimePrint()))
                     print(yellow("URL: " + result[0]))
-                    if "Error:" in title:
-                        print(red("Title: " + result[1]))
-                    else:
-                        print(yellow("Title: " + result[1]))
+                    print(titleColor)
                     print(" ")
-                FileOutput(result_list, csvPath, logPath, queryInput, count)
+                    result_list.append(result)
+                FileOutput(result_list, csvPath, logPath, queryInput, count, errorCount)
                 SprungeUpload(csvPath, logPath)
+### DIRECT QUERY
     elif args.query:
         line = args.query
         result_list = []
@@ -206,7 +215,7 @@ def main():
 #                           tld = 'com',  # The top level domain
 #                           lang = 'en',  # The language
 #                           start = 0,    # First result to retrieve
-#                           stop = 20,    # Last result to retrieve
+#                       stop = 50,    # Last result to retrieve
                         num = 10,     # Number of results per page
                         pause = 4.0,  # Lapse between HTTP requests
                         ):
@@ -216,8 +225,11 @@ def main():
                 result = ([i, url])
                 url_list.append(result)
                 clear()
-                print(green("SPADE v0.5a"))
-                QueryProgress(queryInput)
+                print(green("SPADE v0.6a"))
+                print(" ")
+                print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
+                print(green(DateTimePrint()))
+                print(green(f'Fetching results for string: {queryInput}'))
                 print(yellow(f'No. {i} --- {result[1]}'))
                 if progBarMult == 100:
                     progSign = -1
@@ -236,23 +248,28 @@ def main():
         except HTTPError as err:
             print(red(err))
             countdown(0,5)
-#               break
         print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
+        errorCount = 0
         for i in url_list:
             numOfURL = len(url_list)
             count = i[0]
             url = i[1]
-            title = re.sub(r'[\n\r\t]*', '', ScrapeTitle(url))
+            if 'ERROR' in ScrapeTitle(url):
+
+                title = ScrapeTitle(url)[0]
+                errorUrl = ScrapeTitle(url)[1]
+                errorCount += 1
+                titleColor = red(f'Error: {title}')
+            else:
+                title = re.sub(r'[\n\r\t]*', '', str(ScrapeTitle(url)))
+                titleColor = yellow(f'Title: {title}')
             result = ([url, title])
-            result_list.append(result)
             print(yellow(str(count) + " of " + str(numOfURL) + " URLs | " + DateTimePrint()))
             print(yellow("URL: " + result[0]))
-            if "Error:" in title:
-                print(red("Title: " + result[1]))
-            else:
-                print(yellow("Title: " + result[1]))
+            print(titleColor)
             print(" ")
-        FileOutput(result_list, csvPath, logPath, queryInput, count)
+            result_list.append(result)
+        FileOutput(result_list, csvPath, logPath, queryInput, count, errorCount)
         SprungeUpload(csvPath, logPath)
 
             
