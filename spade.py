@@ -80,7 +80,7 @@ def ScrapeTitle(url):
         return errorInfo
 
 def FileOutput(result_list, csvPath, logPath, queryInput, count, errorCount):
-    
+    os.mkdir('RESULTS')
     for i in result_list:
         data = [i]
         wr = open(csvPath, 'a', newline='')
