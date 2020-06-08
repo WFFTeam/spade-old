@@ -15,6 +15,7 @@ from urllib.error import HTTPError
 import argparse
 import time
 from termcolor import colored
+import errno
 
 def yellow(text):
     return colored(text, 'yellow', attrs=['bold'])
@@ -79,8 +80,13 @@ def ScrapeTitle(url):
         errorInfo = [errorNotice,errorUrl,'ERROR']
         return errorInfo
 
-def FileOutput(result_list, csvPath, logPath, queryInput, count, errorCount):
-    os.mkdir('RESULTS')
+def FileOutput(result_list, csvPath, logPath, queryInput, count, errorCount):    
+    try:
+        os.mkdir(RESULTS)
+    except OSError as exc:
+        if exc.errno != errno.EEXIST:
+            raise
+        pass
     for i in result_list:
         data = [i]
         wr = open(csvPath, 'a', newline='')
