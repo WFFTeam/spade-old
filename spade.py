@@ -17,6 +17,7 @@ import time
 from termcolor import colored
 import errno
 
+
 def yellow(text):
     return colored(text, 'yellow', attrs=['bold'])
 
@@ -82,7 +83,7 @@ def ScrapeTitle(url):
 
 def FileOutput(result_list, csvPath, logPath, queryInput, count, errorCount):    
     try:
-        os.mkdir(RESULTS)
+        os.mkdir('RESULTS')
     except OSError as exc:
         if exc.errno != errno.EEXIST:
             raise
@@ -186,13 +187,14 @@ def main():
                     count = i[0]
                     url = i[1]
                     if 'ERROR' in ScrapeTitle(url):
-
                         title = ScrapeTitle(url)[0]
                         errorUrl = ScrapeTitle(url)[1]
                         errorCount += 1
                         titleColor = red(f'Error: {title}')
                     else:
                         title = re.sub(r'[\n\r\t]*', '', str(ScrapeTitle(url)))
+                        WhiteSpaceComb = re.compile(r"\s+")
+                        title = WhiteSpaceComb.sub(" ", title).strip()
                         titleColor = yellow(f'Title: {title}')
                     result = ([url, title])
                     print(yellow(str(count) + " of " + str(numOfURL) + " URLs | " + DateTimePrint()))
