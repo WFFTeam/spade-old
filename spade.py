@@ -111,7 +111,7 @@ def FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, error
     with open(csvPath) as csvFile:
         csvReader = csv.DictReader(csvFile)
         for csvRow in csvReader:
-            title = csvRow["Title"]
+            title = re.sub(r'[.]*', '', csvRow["Title"])
             dataJson[title] = csvRow
     with open(jsonPath, 'w') as jsonFile:
         jsonFile.write(json.dumps(dataJson, sort_keys=True, indent=4, ensure_ascii=False))            
@@ -244,7 +244,7 @@ def main():
 #                           tld = 'com',  # The top level domain
 #                           lang = 'en',  # The language
 #                           start = 0,    # First result to retrieve
-#                           stop = 5,    # Last result to retrieve
+#                       stop = 5,    # Last result to retrieve
                         num = 10,     # Number of results per page
                         pause = 4.0,  # Lapse between HTTP requests
                         ):
