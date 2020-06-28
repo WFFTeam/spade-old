@@ -3,20 +3,19 @@
 from bs4 import BeautifulSoup
 from urllib.request import Request, urlopen
 from googlesearch import search
-import csv
-import string
-import re
-import sys
-import os
-import time
+import csv, json, string, re, sys, os, time, requests, argparse, errno, mpu.io
+#import string
+#import re
+#import sys
+#import os
+#import time
 from datetime import datetime
-import requests
+#import requests
 from urllib.error import HTTPError
-import argparse
-import time
+#import argparse
 from termcolor import colored
-import errno
-
+#import errno
+#import mpu.io
 
 def yellow(text):
     return colored(text, 'yellow', attrs=['bold'])
@@ -63,8 +62,8 @@ def QueryProgress(currentLine, numOfLines, queryInput):
     print(" ")
     print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
     print(green(DateTimePrint()))
-    print(green(f'Working string {currentLine} of {numOfLines}'))
-    print(green(f'Fetching results for string: {queryInput}'))
+    print(green(f"Working string {currentLine} of {numOfLines}"))
+    print(green(f"Fetching results for string: {queryInput}"))
 
 def ScrapeTitle(url):
     errorUrl = ""
@@ -74,35 +73,52 @@ def ScrapeTitle(url):
         req = Request(url,headers=hdr)
         page = urlopen(req, timeout = 5)
         soup = BeautifulSoup(page.read().decode('utf-8', 'ignore'), "html.parser")
-        return soup.title.text
+        return str(soup.title.text)
+
     except Exception as error:
         errorUrl = url
         errorNotice = error
         errorInfo = [errorNotice,errorUrl,'ERROR']
         return errorInfo
 
-def FileOutput(result_list, csvPath, logPath, queryInput, count, errorCount):    
+def FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount):    
     try:
         os.mkdir('RESULTS')
     except OSError as exc:
         if exc.errno != errno.EEXIST:
             raise
         pass
+####HEADERS
+    with open(csvPath, 'w', newline='') as csvFile:
+        writer = csv.writer(csvFile)
+        writer.writerow(["Url", "Title"])
+####CSV
     for i in result_list:
         data = [i]
         wr = open(csvPath, 'a', newline='')
         with wr:
-            write = csv.writer(wr)
-            write.writerows(data)
-    
+            writer = csv.writer(wr)
+            writer.writerows(data)
+####LOG
     with open(logPath, "w") as text_file:
         print("SPADE v0.6a", file=text_file)
         print("Search string: " + queryInput, file=text_file)
         print("Results saved to: " + csvPath, file=text_file)
         print("Total number of results found: " + str(count), file=text_file)
         print("Number of errors:" + str(errorCount), file=text_file)
+####JSON
+    dataJson = {}
+    with open(csvPath) as csvFile:
+        csvReader = csv.DictReader(csvFile)
+        for csvRow in csvReader:
+            title = csvRow["Title"]
+            dataJson[title] = csvRow
+    with open(jsonPath, 'w') as jsonFile:
+        jsonFile.write(json.dumps(dataJson, sort_keys=True, indent=4, ensure_ascii=False))            
+    
     print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
     print(green("Saved results to: " + csvPath))
+    print(green("Saved json file to: " + jsonPath))
     print(green("Saved log to: " + logPath))
     print(red("Number of errors:" + str(errorCount)))
     
@@ -136,8 +152,10 @@ def main():
                 url_list =[]
                 queryInput = re.sub(r'[\n\r\t]*', '', line)
                 csvFilename = re.sub('[\W_]', '.', queryInput) + '.csv'
+                jsonFilename = re.sub('[\W_]', '.', queryInput) + '.json'
                 logFilename = re.sub('[\W_]', '.', queryInput) + '.log'
                 csvPath = './RESULTS/' + csvFilename
+                jsonPath = './RESULTS/' + jsonFilename
                 logPath = './RESULTS/' + logFilename
                 i = 0
                 progBarMult = i
@@ -202,7 +220,7 @@ def main():
                     print(titleColor)
                     print(" ")
                     result_list.append(result)
-                FileOutput(result_list, csvPath, logPath, queryInput, count, errorCount)
+                FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount)
                 SprungeUpload(csvPath, logPath)
 ### DIRECT QUERY
     elif args.query:
@@ -211,8 +229,11 @@ def main():
         url_list =[]
         queryInput = re.sub(r'[\n\r\t]*', '', line)
         csvFilename = re.sub('[\W_]', '.', queryInput) + '.csv'
+        jsonFilename = re.sub('[\W_]', '.', queryInput) + '.json'
         logFilename = re.sub('[\W_]', '.', queryInput) + '.log'
+        
         csvPath = './RESULTS/' + csvFilename
+        jsonPath = './RESULTS/' + jsonFilename
         logPath = './RESULTS/' + logFilename
         i = 0
         progBarMult = i
@@ -223,7 +244,7 @@ def main():
 #                           tld = 'com',  # The top level domain
 #                           lang = 'en',  # The language
 #                           start = 0,    # First result to retrieve
-#                       stop = 50,    # Last result to retrieve
+#                           stop = 5,    # Last result to retrieve
                         num = 10,     # Number of results per page
                         pause = 4.0,  # Lapse between HTTP requests
                         ):
@@ -233,9 +254,8 @@ def main():
                 result = ([i, url])
                 url_list.append(result)
                 clear()
-                print(green("SPADE v0.6a"))
-                print(" ")
                 print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
+                print(green("SPADE v0.6a"))
                 print(green(DateTimePrint()))
                 print(green(f'Fetching results for string: {queryInput}'))
                 print(yellow(f'No. {i} --- {result[1]}'))
@@ -270,6 +290,8 @@ def main():
                 titleColor = red(f'Error: {title}')
             else:
                 title = re.sub(r'[\n\r\t]*', '', str(ScrapeTitle(url)))
+                WhiteSpaceComb = re.compile(r"\s+")
+                title = WhiteSpaceComb.sub(" ", title).strip()
                 titleColor = yellow(f'Title: {title}')
             result = ([url, title])
             print(yellow(str(count) + " of " + str(numOfURL) + " URLs | " + DateTimePrint()))
@@ -277,7 +299,7 @@ def main():
             print(titleColor)
             print(" ")
             result_list.append(result)
-        FileOutput(result_list, csvPath, logPath, queryInput, count, errorCount)
+        FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount)
         SprungeUpload(csvPath, logPath)
 
             
