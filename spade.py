@@ -116,19 +116,30 @@ def FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, error
     print(green("Saved log to: " + logPath))
     print(red("Number of errors:" + str(errorCount)))
 
-# Sprunge Upload *TODO:ADD JSON UPLOAD    
-def SprungeUpload(csvPath, logPath):
+# Sprunge Upload
+def SprungeUpload(csvPath, jsonPath, logPath):
+# CSV UPLOAD
     files = {
         'sprunge': (None, open(csvPath, 'rb')),
     }
     r = requests.post('http://sprunge.us/', files=files)
-    sprungeUsURL = r.text
-    print(yellow("File uploaded to sprunge.us; access URL: " + sprungeUsURL))
+    sprungeUsURL_csv = r.text
+# JSON UPLOAD
+    files = {
+        'sprunge': (None, open(jsonPath, 'rb')),
+    }
+    r = requests.post('http://sprunge.us/', files=files)
+    sprungeUsURL_json = r.text
+# PRINT SOLUTIONS    
+    print(yellow("Files uploaded to sprunge.us; access URL:"))
+    print(cyan(sprungeUsURL_csv), end = '')
+    print(cyan(sprungeUsURL_json))
     print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
     print(" ")
+# WRITE TO LOG
     with open(logPath, "a+") as text_file:
-        print("CSV URL: " + sprungeUsURL, file=text_file)
-
+        print("CSV URL: " + sprungeUsURL_csv, file=text_file)
+        print("JSON URL: " + sprungeUsURL_json, file=text_file)
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--list", "-l", help="Set file to read URLs from")
@@ -161,7 +172,7 @@ def main():
 #                               tld = 'com',  # The top level domain
 #                               lang = 'en',  # The language
 #                               start = 0,    # First result to retrieve
-#                               stop = 10,    # Last result to retrieve
+#                               stop = 5,    # Last result to retrieve
                                 num = 10,     # Number of results per page
                                 pause = 4.0,  # Lapse between HTTP requests
                                 ):
@@ -216,7 +227,7 @@ def main():
                     print(" ")
                     result_list.append(result)
                 FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount)
-                SprungeUpload(csvPath, logPath)
+                SprungeUpload(csvPath, jsonPath, logPath)
 # SPECIFY QUERY IN COMMAND
     elif args.query:
         line = args.query
@@ -295,7 +306,7 @@ def main():
             print(" ")
             result_list.append(result)
         FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount)
-        SprungeUpload(csvPath, logPath)
+        SprungeUpload(csvPath, jsonPath, logPath)
 
             
 if __name__ == "__main__":
