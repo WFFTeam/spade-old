@@ -4,34 +4,25 @@ from bs4 import BeautifulSoup
 from urllib.request import Request, urlopen
 from googlesearch import search
 import csv, json, string, re, sys, os, time, requests, argparse, errno, mpu.io
-#import string
-#import re
-#import sys
-#import os
-#import time
 from datetime import datetime
-#import requests
 from urllib.error import HTTPError
-#import argparse
 from termcolor import colored
-#import errno
-#import mpu.io
 
+# TERMCOLOR FUNCTIONS
 def yellow(text):
     return colored(text, 'yellow', attrs=['bold'])
-
 def green(text):
     return colored(text, 'green', attrs=['bold'])
-
 def red(text):
     return colored(text, 'red', attrs=['bold'])
-
 def cyan(text):
     return colored(text, 'cyan', attrs=['bold'])
 
+# SCREEN CLEAN FUNCTION
 def clear():
     os.system( 'clear')
 
+# COUNTDOWN FUNCTION *NEED TESTING
 def countdown(p,q):
     i=p
     j=q
@@ -52,12 +43,13 @@ def countdown(p,q):
         print("Goodbye!", end="\r")
         time.sleep(1)
 
-
+# CURRENT DATE&TIME FUNCTION
 def DateTimePrint():
     now = datetime.now()
     dt_string = now.strftime("%H:%M:%S %d/%m/%Y")
     return(dt_string);
 
+# QUERYPROGRESS FUNCTION
 def QueryProgress(currentLine, numOfLines, queryInput):
     print(" ")
     print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
@@ -65,6 +57,7 @@ def QueryProgress(currentLine, numOfLines, queryInput):
     print(green(f"Working string {currentLine} of {numOfLines}"))
     print(green(f"Fetching results for string: {queryInput}"))
 
+# BS4 TITLE PARSE FUNCTION
 def ScrapeTitle(url):
     errorUrl = ""
     errorCount = 0
@@ -81,6 +74,7 @@ def ScrapeTitle(url):
         errorInfo = [errorNotice,errorUrl,'ERROR']
         return errorInfo
 
+# WRITE RESULTS TO FILES
 def FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount):    
     try:
         os.mkdir('RESULTS')
@@ -88,25 +82,25 @@ def FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, error
         if exc.errno != errno.EEXIST:
             raise
         pass
-####HEADERS
+    # HEADERS
     with open(csvPath, 'w', newline='') as csvFile:
         writer = csv.writer(csvFile)
         writer.writerow(["Url", "Title"])
-####CSV
+    # CSV
     for i in result_list:
         data = [i]
         wr = open(csvPath, 'a', newline='')
         with wr:
             writer = csv.writer(wr)
             writer.writerows(data)
-####LOG
+    # LOG
     with open(logPath, "w") as text_file:
         print("SPADE v0.6a", file=text_file)
         print("Search string: " + queryInput, file=text_file)
         print("Results saved to: " + csvPath, file=text_file)
         print("Total number of results found: " + str(count), file=text_file)
         print("Number of errors:" + str(errorCount), file=text_file)
-####JSON
+    # JSON
     dataJson = {}
     with open(csvPath) as csvFile:
         csvReader = csv.DictReader(csvFile)
@@ -121,7 +115,8 @@ def FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, error
     print(green("Saved json file to: " + jsonPath))
     print(green("Saved log to: " + logPath))
     print(red("Number of errors:" + str(errorCount)))
-    
+
+# Sprunge Upload *TODO:ADD JSON UPLOAD    
 def SprungeUpload(csvPath, logPath):
     files = {
         'sprunge': (None, open(csvPath, 'rb')),
@@ -139,7 +134,7 @@ def main():
     parser.add_argument("--list", "-l", help="Set file to read URLs from")
     parser.add_argument("--query", "-q", help="Set Google search query")
     args = parser.parse_args()
-### LOAD LIST OF QUERUES
+# LOAD LIST OF QUERUES FROM FILE
     if args.list:
         QueryListArg = args.list
         numOfLines = sum(1 for line in open(QueryListArg, 'r'))
@@ -222,7 +217,7 @@ def main():
                     result_list.append(result)
                 FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount)
                 SprungeUpload(csvPath, logPath)
-### DIRECT QUERY
+# SPECIFY QUERY IN COMMAND
     elif args.query:
         line = args.query
         result_list = []
@@ -241,9 +236,9 @@ def main():
         progSign = 1
         try:
             for url in search(queryInput,   # The query you want to run
-#                           tld = 'com',  # The top level domain
-#                           lang = 'en',  # The language
-#                           start = 0,    # First result to retrieve
+#                       tld = 'com',  # The top level domain
+#                       lang = 'en',  # The language
+#                       start = 0,    # First result to retrieve
 #                       stop = 5,    # Last result to retrieve
                         num = 10,     # Number of results per page
                         pause = 4.0,  # Lapse between HTTP requests
