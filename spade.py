@@ -1,4 +1,5 @@
-#SPADE v0.6a
+#SPADE v0.7a
+spadeVersion = "v0.7a"
 
 from bs4 import BeautifulSoup
 from urllib.request import Request, urlopen
@@ -7,6 +8,9 @@ import csv, json, string, re, sys, os, time, requests, argparse, errno, mpu.io
 from datetime import datetime
 from urllib.error import HTTPError
 from termcolor import colored
+import warnings # pymongo warning ingore
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+import pymongo
 
 # TERMCOLOR FUNCTIONS
 def yellow(text):
@@ -76,6 +80,8 @@ def ScrapeTitle(url):
 
 # WRITE RESULTS TO FILES
 def FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount):    
+    print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
+    print(yellow("SAVING RESULTS"))
     try:
         os.mkdir('RESULTS')
     except OSError as exc:
@@ -95,7 +101,7 @@ def FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, error
             writer.writerows(data)
     # LOG
     with open(logPath, "w") as text_file:
-        print("SPADE v0.6a", file=text_file)
+        print("SPADE v0.7a", file=text_file)
         print("Search string: " + queryInput, file=text_file)
         print("Results saved to: " + csvPath, file=text_file)
         print("Total number of results found: " + str(count), file=text_file)
@@ -110,42 +116,78 @@ def FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, error
     with open(jsonPath, 'w') as jsonFile:
         jsonFile.write(json.dumps(dataJson, sort_keys=True, indent=4, ensure_ascii=False))            
     
-    print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
-    print(green("Saved results to: " + csvPath))
-    print(green("Saved json file to: " + jsonPath))
-    print(green("Saved log to: " + logPath))
+    print(green("Saved results to: ") + yellow(csvPath))
+    print(green("Saved json file to: ") + yellow(jsonPath))
+    print(green("Saved log to: ") + yellow(logPath))
     print(red("Number of errors:" + str(errorCount)))
 
-# Sprunge Upload
+# UPLOAD JSON TO MONGODB
+def Json2PyMongo(jsonPath, logPath, queryInput):
+    print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
+    print(yellow("UPLOADING JSON FILE TO MONGODB"))
+    databaseName = "spadeDB" # DB Name
+    collectionName = re.sub('[\W_]', '_', queryInput)
+    dbhost = 'localhost' # DB host
+    dbport = 27017 # DB port
+    
+    mng_client = pymongo.MongoClient(dbhost, dbport)
+    mng_db = mng_client[databaseName]
+    db_cm = mng_db[collectionName]
+
+    with open(jsonPath, 'r') as data_file: # Get the data from JSON file
+        data_json = json.load(data_file)
+    try:
+        db_cm.insert(data_json) # Insert Data
+    except Exception as error:
+        return
+
+    # Print report
+    mongoDBstring = "mongodb://" + dbhost.replace("'", "") + ":" + str(dbport)
+    print(green("Input json file: ") + yellow(jsonPath))
+    print(green("Uploading to host: ") + yellow(dbhost))
+    print(green("Database name: ") + yellow(databaseName))
+    print(green("Collection name: ") + yellow(collectionName))
+    print(green("MongoDB connection string: ") + cyan(mongoDBstring))
+    
+    # Save to log file
+    with open(logPath, "a+") as text_file:
+        print("JSON file uploaded to MongoDB host: " + mongoDBstring, file=text_file)
+        print("Database name: " + databaseName, file=text_file)
+        print("Collection name: " + collectionName, file=text_file)
+
+# SPRUNGE UPLOAD
 def SprungeUpload(csvPath, jsonPath, logPath):
-# CSV UPLOAD
+    print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
+    print(yellow("UPLOADING FILES TO SPRUNGE.US"))
+    # CSV UPLOAD
     files = {
         'sprunge': (None, open(csvPath, 'rb')),
     }
     r = requests.post('http://sprunge.us/', files=files)
     sprungeUsURL_csv = r.text
-# JSON UPLOAD
+    # JSON UPLOAD
     files = {
         'sprunge': (None, open(jsonPath, 'rb')),
     }
     r = requests.post('http://sprunge.us/', files=files)
     sprungeUsURL_json = r.text
-# PRINT SOLUTIONS    
+    # PRINT URLS    
     print(yellow("Files uploaded to sprunge.us; access URL:"))
-    print(cyan(sprungeUsURL_csv), end = '')
-    print(cyan(sprungeUsURL_json))
+    print(green("CSV URL: ") + cyan(sprungeUsURL_csv), end = '')
+    print(green("JSON URL: ") + cyan(sprungeUsURL_json), end = '')
     print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
-    print(" ")
-# WRITE TO LOG
+    # WRITE TO LOG
     with open(logPath, "a+") as text_file:
         print("CSV URL: " + sprungeUsURL_csv, file=text_file)
         print("JSON URL: " + sprungeUsURL_json, file=text_file)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--list", "-l", help="Set file to read URLs from")
     parser.add_argument("--query", "-q", help="Set Google search query")
     args = parser.parse_args()
-# LOAD LIST OF QUERUES FROM FILE
+    # LOAD LIST OF QUERUES FROM FILE
     if args.list:
         QueryListArg = args.list
         numOfLines = sum(1 for line in open(QueryListArg, 'r'))
@@ -172,7 +214,7 @@ def main():
 #                               tld = 'com',  # The top level domain
 #                               lang = 'en',  # The language
 #                               start = 0,    # First result to retrieve
-#                               stop = 5,    # Last result to retrieve
+                                stop = 5,    # Last result to retrieve
                                 num = 10,     # Number of results per page
                                 pause = 4.0,  # Lapse between HTTP requests
                                 ):
@@ -183,7 +225,7 @@ def main():
                         url_list.append(result)
                         clear()
                         print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
-                        print(green("SPADE v0.6a"))
+                        print(green("SPADE " + spadeVersion))
                         print(cyan("Searching google and collecting URL addresses"))
                         QueryProgress(currentLine, numOfLines, queryInput)
                         print(yellow(f'No. {i} --- {result[1]}'))
@@ -227,8 +269,10 @@ def main():
                     print(" ")
                     result_list.append(result)
                 FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount)
+                Json2PyMongo(jsonPath, logPath, queryInput)
                 SprungeUpload(csvPath, jsonPath, logPath)
-# SPECIFY QUERY IN COMMAND
+                
+    # SPECIFY QUERY IN COMMAND
     elif args.query:
         line = args.query
         result_list = []
@@ -250,7 +294,7 @@ def main():
 #                       tld = 'com',  # The top level domain
 #                       lang = 'en',  # The language
 #                       start = 0,    # First result to retrieve
-#                       stop = 5,    # Last result to retrieve
+                        stop = 5,    # Last result to retrieve
                         num = 10,     # Number of results per page
                         pause = 4.0,  # Lapse between HTTP requests
                         ):
@@ -261,7 +305,7 @@ def main():
                 url_list.append(result)
                 clear()
                 print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
-                print(green("SPADE v0.6a"))
+                print(green("SPADE " + spadeVersion))
                 print(green(DateTimePrint()))
                 print(green(f'Fetching results for string: {queryInput}'))
                 print(yellow(f'No. {i} --- {result[1]}'))
@@ -306,8 +350,8 @@ def main():
             print(" ")
             result_list.append(result)
         FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount)
+        Json2PyMongo(jsonPath, logPath, queryInput)
         SprungeUpload(csvPath, jsonPath, logPath)
-
             
 if __name__ == "__main__":
     main()
