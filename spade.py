@@ -66,7 +66,8 @@ def ScrapeTitle(url):
     errorUrl = ""
     errorCount = 0
     try:
-        hdr = {'User-Agent': 'Mozilla/5.0'}
+#       hdr = {'User-Agent': 'Mozilla/5.0'}
+        hdr = {'User-Agent': "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36"}
         req = Request(url,headers=hdr)
         page = urlopen(req, timeout = 5)
         soup = BeautifulSoup(page.read().decode('utf-8', 'ignore'), "html.parser")
