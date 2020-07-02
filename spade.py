@@ -115,11 +115,10 @@ def FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, error
             dataJson[title] = csvRow
     with open(jsonPath, 'w') as jsonFile:
         jsonFile.write(json.dumps(dataJson, sort_keys=True, indent=4, ensure_ascii=False))            
-    
+
     print(green("Saved results to: ") + yellow(csvPath))
     print(green("Saved json file to: ") + yellow(jsonPath))
     print(green("Saved log to: ") + yellow(logPath))
-    print(red("Number of errors:" + str(errorCount)))
 
 # UPLOAD JSON TO MONGODB
 def Json2PyMongo(jsonPath, logPath, queryInput):
@@ -268,6 +267,9 @@ def main():
                     print(titleColor)
                     print(" ")
                     result_list.append(result)
+                
+                print(red("Number of errors:" + str(errorCount)))
+                
                 FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount)
                 Json2PyMongo(jsonPath, logPath, queryInput)
                 SprungeUpload(csvPath, jsonPath, logPath)
@@ -349,6 +351,9 @@ def main():
             print(titleColor)
             print(" ")
             result_list.append(result)
+
+        print(red("Number of errors:" + str(errorCount)))
+        
         FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount)
         Json2PyMongo(jsonPath, logPath, queryInput)
         SprungeUpload(csvPath, jsonPath, logPath)
