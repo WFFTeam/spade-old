@@ -199,8 +199,8 @@ def main():
                 result_list = []
                 url_list =[]
                 queryInput = re.sub(r'[\n\r\t]*', '', line)
+                #Filename & Filepath generaton
                 baseFilename = re.sub(r'\.+', ".", re.sub('[\W_]', '.', queryInput))
-                
                 csvFilename = baseFilename + '.csv'
                 jsonFilename = baseFilename + '.json'
                 logFilename = baseFilename + '.log'
@@ -282,6 +282,7 @@ def main():
         line = args.query
         result_list = []
         url_list =[]
+        #Filename & Filepath generaton
         queryInput = re.sub(r'[\n\r\t]*', '', line)
         baseFilename = re.sub(r'\.+', ".", re.sub('[\W_]', '.', queryInput))
         csvFilename = baseFilename + '.csv'
