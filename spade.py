@@ -178,8 +178,8 @@ def SprungeUpload(csvPath, jsonPath, logPath):
     print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
     # WRITE TO LOG
     with open(logPath, "a+") as text_file:
-        print("CSV URL: " + sprungeUsURL_csv, file=text_file)
-        print("JSON URL: " + sprungeUsURL_json, file=text_file)
+        print("CSV URL: " + sprungeUsURL_csv, end = '', file=text_file)
+        print("JSON URL: " + sprungeUsURL_json, end = '', file=text_file)
 
 
 def main():
@@ -199,9 +199,11 @@ def main():
                 result_list = []
                 url_list =[]
                 queryInput = re.sub(r'[\n\r\t]*', '', line)
-                csvFilename = re.sub('[\W_]', '.', queryInput) + '.csv'
-                jsonFilename = re.sub('[\W_]', '.', queryInput) + '.json'
-                logFilename = re.sub('[\W_]', '.', queryInput) + '.log'
+                baseFilename = re.sub(r'\.+', ".", re.sub('[\W_]', '.', queryInput))
+                
+                csvFilename = baseFilename + '.csv'
+                jsonFilename = baseFilename + '.json'
+                logFilename = baseFilename + '.log'
                 csvPath = './RESULTS/' + csvFilename
                 jsonPath = './RESULTS/' + jsonFilename
                 logPath = './RESULTS/' + logFilename
@@ -281,9 +283,10 @@ def main():
         result_list = []
         url_list =[]
         queryInput = re.sub(r'[\n\r\t]*', '', line)
-        csvFilename = re.sub('[\W_]', '.', queryInput) + '.csv'
-        jsonFilename = re.sub('[\W_]', '.', queryInput) + '.json'
-        logFilename = re.sub('[\W_]', '.', queryInput) + '.log'
+        baseFilename = re.sub(r'\.+', ".", re.sub('[\W_]', '.', queryInput))
+        csvFilename = baseFilename + '.csv'
+        jsonFilename = baseFilename + '.json'
+        logFilename = baseFilename + '.log'
         
         csvPath = './RESULTS/' + csvFilename
         jsonPath = './RESULTS/' + jsonFilename
