@@ -122,11 +122,11 @@ def FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, error
     print(green("Saved log to: ") + yellow(logPath))
 
 # UPLOAD JSON TO MONGODB
-def Json2PyMongo(jsonPath, logPath, queryInput):
+def Json2PyMongo(jsonPath, logPath, baseFilename):
     print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
     print(yellow("UPLOADING JSON FILE TO MONGODB"))
     databaseName = "spadeDB" # DB Name
-    collectionName = re.sub('[\W_]', '_', queryInput)
+    collectionName = re.sub('[\W_]', '_', baseFilename)
     dbhost = 'localhost' # DB host
     dbport = 27017 # DB port
     
@@ -274,7 +274,7 @@ def main():
                 print(red("Number of errors:" + str(errorCount)))
                 
                 FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount)
-                Json2PyMongo(jsonPath, logPath, queryInput)
+                Json2PyMongo(jsonPath, logPath, baseFilename)
                 SprungeUpload(csvPath, jsonPath, logPath)
                 
     # SPECIFY QUERY IN COMMAND
@@ -360,7 +360,7 @@ def main():
         print(red("Number of errors:" + str(errorCount)))
         
         FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount)
-        Json2PyMongo(jsonPath, logPath, queryInput)
+        Json2PyMongo(jsonPath, logPath, baseFilename)
         SprungeUpload(csvPath, jsonPath, logPath)
             
 if __name__ == "__main__":
