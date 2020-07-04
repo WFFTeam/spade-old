@@ -44,7 +44,7 @@ def countdown(p,q):
         if(i==0 and j==-1):
             break
     if(i==0 and j==-1):
-        print(red("RESTARTING"), end="\r"))
+        print(red("RESTARTING"), end="\r")
         time.sleep(1)
 
 # CURRENT DATE&TIME FUNCTION
