@@ -4,7 +4,7 @@ spadeVersion = "v0.7a"
 from bs4 import BeautifulSoup
 from urllib.request import Request, urlopen
 from googlesearch import search
-import csv, json, string, re, sys, os, time, requests, argparse, errno, mpu.io, unidecode
+import csv, json, string, re, sys, os, time, requests, argparse, errno, mpu.io, unidecode, urllib.parse
 from datetime import datetime
 from urllib.error import HTTPError
 from termcolor import colored
@@ -44,7 +44,7 @@ def countdown(p,q):
         if(i==0 and j==-1):
             break
     if(i==0 and j==-1):
-        print("Goodbye!", end="\r")
+        print(red("RESTARTING", end="\r"))
         time.sleep(1)
 
 # CURRENT DATE&TIME FUNCTION
@@ -125,13 +125,18 @@ def FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, error
 def Json2PyMongo(jsonPath, logPath, baseFilename):
     print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
     print(yellow("UPLOADING JSON FILE TO MONGODB"))
-    databaseName = "spadeDB" # DB Name
     collectionName = re.sub('[\W_]', '_', baseFilename)
-    print(collectionName)
-    dbhost = 'localhost' # DB host
+    databaseName = "spadeDB" # DB Name
+    userDB = 'admin' # Admin DB
+    dbhost = '127.0.0.1' # DB host
     dbport = 27017 # DB port
+    dbuser = 'spadeUser' #DB Username
+    dbpass = "S1EdE9xxxxAuIII@#!22Dandjop" # DB Password
+
+    username = urllib.parse.quote_plus(dbuser)
+    password = urllib.parse.quote_plus(dbpass)
     
-    mng_client = pymongo.MongoClient(dbhost, dbport)
+    mng_client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/%s' % (username, password, dbhost, dbport, userDB))
     mng_db = mng_client[databaseName]
     db_cm = mng_db[collectionName]
 
@@ -139,8 +144,6 @@ def Json2PyMongo(jsonPath, logPath, baseFilename):
         data_json = json.load(data_file)
     try:
         db_cm.insert(data_json) # Insert Data
-#       db_cm.update_one({'_id': data_json['_id']}, data_json, upsert=True)
-
     except Exception as error:
         return
     
@@ -157,7 +160,7 @@ def Json2PyMongo(jsonPath, logPath, baseFilename):
         print("JSON file uploaded to MongoDB host: " + mongoDBstring, file=text_file)
         print("Database name: " + databaseName, file=text_file)
         print("Collection name: " + collectionName, file=text_file)
-
+        
 # SPRUNGE UPLOAD
 def SprungeUpload(csvPath, jsonPath, logPath):
     print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
@@ -183,7 +186,6 @@ def SprungeUpload(csvPath, jsonPath, logPath):
     with open(logPath, "a+") as text_file:
         print("CSV URL: " + sprungeUsURL_csv, end = '', file=text_file)
         print("JSON URL: " + sprungeUsURL_json, end = '', file=text_file)
-
 
 def main():
     parser = argparse.ArgumentParser()
@@ -247,10 +249,17 @@ def main():
                         
                         
                 except IndexError as e:
+                    print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
+                    print(green("SPADE " + spadeVersion))
                     print(red('Index error occured: ' + str(e.code)))
                 except HTTPError as err:
+                    print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
+                    print(green("SPADE " + spadeVersion))
                     print(red(err))
-                    countdown(0,5)
+                    if err.code == 429:
+                        countdown(0,1800)
+                        main()                        
+                    
                 print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
                 errorCount = 0
                 for i in url_list:
@@ -258,7 +267,7 @@ def main():
                     count = i[0]
                     url = i[1]
                     if 'ERROR' in ScrapeTitle(url):
-                        title = ScrapeTitle(url)[0]
+                        title = ScrapeTitle(url)[0] # FORMAT TITLE
                         errorUrl = ScrapeTitle(url)[1]
                         errorCount += 1
                         titleColor = red(f'Error: {title}')
@@ -330,12 +339,19 @@ def main():
                 print(cyan(emptyBar + '<=' + "=" * progBarMult + '=>'))
                 print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
                 
-                
         except IndexError as e:
+            print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
+            print(green("SPADE " + spadeVersion))
             print(red('Index error occured: ' + str(e.code)))
         except HTTPError as err:
+            print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
+            print(green("SPADE " + spadeVersion))
             print(red(err))
-            countdown(0,5)
+            if err.code == 429:
+                countdown(0,1800)
+                main()
+
+            
         print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
         errorCount = 0
         for i in url_list:
