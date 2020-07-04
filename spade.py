@@ -4,7 +4,7 @@ spadeVersion = "v0.7a"
 from bs4 import BeautifulSoup
 from urllib.request import Request, urlopen
 from googlesearch import search
-import csv, json, string, re, sys, os, time, requests, argparse, errno, mpu.io
+import csv, json, string, re, sys, os, time, requests, argparse, errno, mpu.io, unidecode
 from datetime import datetime
 from urllib.error import HTTPError
 from termcolor import colored
@@ -127,6 +127,7 @@ def Json2PyMongo(jsonPath, logPath, baseFilename):
     print(yellow("UPLOADING JSON FILE TO MONGODB"))
     databaseName = "spadeDB" # DB Name
     collectionName = re.sub('[\W_]', '_', baseFilename)
+    print(collectionName)
     dbhost = 'localhost' # DB host
     dbport = 27017 # DB port
     
@@ -138,9 +139,11 @@ def Json2PyMongo(jsonPath, logPath, baseFilename):
         data_json = json.load(data_file)
     try:
         db_cm.insert(data_json) # Insert Data
+#       db_cm.update_one({'_id': data_json['_id']}, data_json, upsert=True)
+
     except Exception as error:
         return
-
+    
     # Print report
     mongoDBstring = "mongodb://" + dbhost.replace("'", "") + ":" + str(dbport)
     print(green("Input json file: ") + yellow(jsonPath))
@@ -200,7 +203,7 @@ def main():
                 url_list =[]
                 queryInput = re.sub(r'[\n\r\t]*', '', line)
                 #Filename & Filepath generaton
-                baseFilename = re.sub(r'\.+', ".", re.sub('[\W_]', '.', queryInput))
+                baseFilename = unidecode.unidecode(re.sub(r'\.+', ".", re.sub('[\W_]', '.', queryInput)))[:100]
                 csvFilename = baseFilename + '.csv'
                 jsonFilename = baseFilename + '.json'
                 logFilename = baseFilename + '.log'
@@ -284,7 +287,7 @@ def main():
         url_list =[]
         #Filename & Filepath generaton
         queryInput = re.sub(r'[\n\r\t]*', '', line)
-        baseFilename = re.sub(r'\.+', ".", re.sub('[\W_]', '.', queryInput))
+        baseFilename = unidecode.unidecode(re.sub(r'\.+', ".", re.sub('[\W_]', '.', queryInput)))[:100]
         csvFilename = baseFilename + '.csv'
         jsonFilename = baseFilename + '.json'
         logFilename = baseFilename + '.log'
