@@ -257,7 +257,13 @@ def main():
                     print(green("SPADE " + spadeVersion))
                     print(red(err))
                     if err.code == 429:
-                        countdown(0,1800)
+                        try:
+                            print(cyan("Increasing retry delay by 600 seconds"))
+                            q += 600
+                            print(yellow("Current delay is: ") + red(str(q)))
+                        except Exception as exceptionError:
+                            q = 600    
+                        countdown(0,q)
                         main()                        
                     
                 print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
@@ -348,9 +354,14 @@ def main():
             print(green("SPADE " + spadeVersion))
             print(red(err))
             if err.code == 429:
-                countdown(0,1800)
-                main()
-
+                try:
+                    print(cyan("Increasing retry delay by 600 seconds"))
+                    q += 600
+                    print(yellow("Current delay is: ") + red(str(q)))
+                except Exception as exceptionError:
+                    q = 600    
+                countdown(0,q)
+                main() 
             
         print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
         errorCount = 0
