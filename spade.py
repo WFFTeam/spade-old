@@ -265,7 +265,7 @@ def main():
                             q = 600    
                         countdown(0,q)
                         main(q)                        
-                    
+                        return
                 print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
                 errorCount = 0
                 for i in url_list:
@@ -359,10 +359,11 @@ def main():
                     q += 600
                     print(yellow("Current delay is: ") + red(str(q)))
                 except Exception as exceptionError:
-                    q = 10    
+                    q = 600    
                 countdown(0,q)
                 main()
-                break
+                return
+            
             
         print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
         errorCount = 0
