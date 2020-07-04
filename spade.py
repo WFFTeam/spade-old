@@ -61,17 +61,33 @@ def QueryProgress(currentLine, numOfLines, queryInput):
     print(green(f"Working string {currentLine} of {numOfLines}"))
     print(green(f"Fetching results for string: {queryInput}"))
 
-# BS4 TITLE PARSE FUNCTION
+# BeautifulSoup GET TITLE
 def ScrapeTitle(url):
     errorUrl = ""
     errorCount = 0
     try:
-#       hdr = {'User-Agent': 'Mozilla/5.0'}
         hdr = {'User-Agent': "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36"}
         req = Request(url,headers=hdr)
         page = urlopen(req, timeout = 5)
         soup = BeautifulSoup(page.read().decode('utf-8', 'ignore'), "html.parser")
         return str(soup.title.text)
+
+    except Exception as error:
+        errorUrl = url
+        errorNotice = str(error)
+        errorInfo = [errorNotice,errorUrl,'ERROR']
+        return errorInfo
+
+# BeautifulSoup GET HTML
+def ScrapeHTML(url):
+    errorUrl = ""
+    errorCount = 0
+    try:
+        hdr = {'User-Agent': "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36"}
+        req = Request(url,headers=hdr)
+        page = urlopen(req, timeout = 5)
+        html = page.read()
+        return html
 
     except Exception as error:
         errorUrl = url
@@ -92,7 +108,7 @@ def FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, error
     # HEADERS
     with open(csvPath, 'w', newline='') as csvFile:
         writer = csv.writer(csvFile)
-        writer.writerow(["Url", "Title"])
+        writer.writerow(["Url", "Title", "Query", "Query_Error", "HTML", "HTML_Error" ])
     # CSV
     for i in result_list:
         data = [i]
@@ -264,8 +280,9 @@ def main():
                         except Exception as exceptionError:
                             q = 600    
                         countdown(0,q)
-                        main(q)                        
+                        main()                        
                         return
+                    
                 print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
                 errorCount = 0
                 for i in url_list:
@@ -273,16 +290,27 @@ def main():
                     count = i[0]
                     url = i[1]
                     if 'ERROR' in ScrapeTitle(url):
-                        title = ScrapeTitle(url)[0] # FORMAT TITLE
+                        title = 'ScrapeTitleError'
+                        errorTitle = ScrapeTitle(url)[0] # FORMAT TITLE
                         errorUrl = ScrapeTitle(url)[1]
                         errorCount += 1
-                        titleColor = red(f'Error: {title}')
+                        titleColor = red(f'Error: {errorTitle}')
                     else:
                         title = re.sub(r'[\n\r\t]*', '', str(ScrapeTitle(url)))
                         WhiteSpaceComb = re.compile(r"\s+")
                         title = WhiteSpaceComb.sub(" ", title).strip()
                         titleColor = yellow(f'Title: {title}')
-                    result = ([url, title])
+                        errorTitle = "OK"
+
+                    if 'ERROR' in ScrapeHTML(url):
+                    	html = 'ScrapeHtmlError'
+                    	errorHtml = ScrapeHTML(url)[0]
+                    	print(red(f'Error: {errorHtml}'))
+                    else:
+                    	html = ScrapeHTML(url)
+                    	errorHtml = "OK"
+
+                    result = ([url, title, queryInput, errorTitle, html, errorHtml])
                     print(yellow(str(count) + " of " + str(numOfURL) + " URLs | " + DateTimePrint()))
                     print(yellow("URL: " + result[0]))
                     print(titleColor)
@@ -372,17 +400,27 @@ def main():
             count = i[0]
             url = i[1]
             if 'ERROR' in ScrapeTitle(url):
-
-                title = ScrapeTitle(url)[0]
+                title = 'ScrapeTitleError'
+                errorTitle = ScrapeTitle(url)[0] # FORMAT TITLE
                 errorUrl = ScrapeTitle(url)[1]
                 errorCount += 1
-                titleColor = red(f'Error: {title}')
+                titleColor = red(f'Error: {errorTitle}')
             else:
                 title = re.sub(r'[\n\r\t]*', '', str(ScrapeTitle(url)))
                 WhiteSpaceComb = re.compile(r"\s+")
                 title = WhiteSpaceComb.sub(" ", title).strip()
                 titleColor = yellow(f'Title: {title}')
-            result = ([url, title])
+                errorTitle = "OK"
+
+            if 'ERROR' in ScrapeHTML(url):
+            	html = 'ScrapeHtmlError'
+            	errorHtml = ScrapeHTML(url)[0]
+            	print(red(f'Error: {errorHtml}'))
+            else:
+            	html = ScrapeHTML(url)
+            	errorHtml = "OK"
+
+            result = ([url, title, queryInput, errorTitle, html, errorHtml])
             print(yellow(str(count) + " of " + str(numOfURL) + " URLs | " + DateTimePrint()))
             print(yellow("URL: " + result[0]))
             print(titleColor)
