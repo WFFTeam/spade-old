@@ -264,7 +264,7 @@ def main():
                         except Exception as exceptionError:
                             q = 600    
                         countdown(0,q)
-                        main()                        
+                        main(q)                        
                     
                 print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
                 errorCount = 0
