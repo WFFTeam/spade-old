@@ -10,3 +10,4 @@ soupsieve==2.0.1
 termcolor==1.1.0
 urllib3==1.25.9
 pymongo==3.10.1
+Unidecode==1.1.1
