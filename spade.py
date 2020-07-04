@@ -75,7 +75,7 @@ def ScrapeTitle(url):
 
     except Exception as error:
         errorUrl = url
-        errorNotice = error
+        errorNotice = str(error)
         errorInfo = [errorNotice,errorUrl,'ERROR']
         return errorInfo
 
