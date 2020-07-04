@@ -359,7 +359,7 @@ def main():
                     q += 600
                     print(yellow("Current delay is: ") + red(str(q)))
                 except Exception as exceptionError:
-                    q = 600    
+                    q = 10    
                 countdown(0,q)
                 main()
                 break
