@@ -108,7 +108,7 @@ def FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, error
     # HEADERS
     with open(csvPath, 'w', newline='') as csvFile:
         writer = csv.writer(csvFile)
-        writer.writerow(["Url", "Title", "Query", "Query_Error", "HTML", "HTML_Error" ])
+        writer.writerow([ "Url", "Title", "Query", "Error" ])
     # CSV
     for i in result_list:
         data = [i]
@@ -138,7 +138,7 @@ def FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, error
     print(green("Saved log to: ") + yellow(logPath))
 
 # UPLOAD JSON TO MONGODB
-def Json2PyMongo(jsonPath, logPath, baseFilename):
+def Json2PyMongo(jsonPath, logPath, baseFilename, resultDict_list):
     print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
     print(yellow("UPLOADING JSON FILE TO MONGODB"))
     collectionName = re.sub('[\W_]', '_', baseFilename)
@@ -160,6 +160,7 @@ def Json2PyMongo(jsonPath, logPath, baseFilename):
         data_json = json.load(data_file)
     try:
         db_cm.insert(data_json) # Insert Data
+        db_cm.insert(resultDict_list)
     except Exception as error:
         return
     
@@ -218,6 +219,7 @@ def main():
             for line in QueryList:
                 currentLine += 1
                 result_list = []
+                resultDict_list = []
                 url_list =[]
                 queryInput = re.sub(r'[\n\r\t]*', '', line)
                 #Filename & Filepath generaton
@@ -302,25 +304,30 @@ def main():
                         titleColor = yellow(f'Title: {title}')
                         errorTitle = "OK"
 
-                    if 'ERROR' in ScrapeHTML(url):
+                    if 'ERROR' in str(ScrapeHTML(url)):
                     	html = 'ScrapeHtmlError'
                     	errorHtml = ScrapeHTML(url)[0]
-                    	print(red(f'Error: {errorHtml}'))
+                    	htmlColor = red(f'Error: {errorHtml}')
                     else:
                     	html = ScrapeHTML(url)
                     	errorHtml = "OK"
+                    	htmlColor = green("HTML sucessfully extracted")
 
-                    result = ([url, title, queryInput, errorTitle, html, errorHtml])
+                    result = ([url, title, queryInput, errorTitle])
+                    resultDict = ({"url":url, "title":title, "queryInput":queryInput, "errorTitle":errorTitle, "html":html, "errorHtml":errorHtml})
+
                     print(yellow(str(count) + " of " + str(numOfURL) + " URLs | " + DateTimePrint()))
                     print(yellow("URL: " + result[0]))
                     print(titleColor)
+                    print(htmlColor)
                     print(" ")
                     result_list.append(result)
-                
+                    resultDict_list.append(resultDict)
+                    
                 print(red("Number of errors:" + str(errorCount)))
                 
                 FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount)
-                Json2PyMongo(jsonPath, logPath, baseFilename)
+                Json2PyMongo(jsonPath, logPath, baseFilename, resultDict_list)
                 SprungeUpload(csvPath, jsonPath, logPath)
                 
     # SPECIFY QUERY IN COMMAND
@@ -328,6 +335,7 @@ def main():
         line = args.query
         result_list = []
         url_list =[]
+        resultDict_list = []
         #Filename & Filepath generaton
         queryInput = re.sub(r'[\n\r\t]*', '', line)
         baseFilename = unidecode.unidecode(re.sub(r'\.+', ".", re.sub('[\W_]', '.', queryInput)))[:100]
@@ -412,26 +420,32 @@ def main():
                 titleColor = yellow(f'Title: {title}')
                 errorTitle = "OK"
 
-            if 'ERROR' in ScrapeHTML(url):
+            if 'ERROR' in str(ScrapeHTML(url)):
             	html = 'ScrapeHtmlError'
             	errorHtml = ScrapeHTML(url)[0]
-            	print(red(f'Error: {errorHtml}'))
+            	htmlColor = red(f'Error: {errorHtml}')
             else:
             	html = ScrapeHTML(url)
+            	htmlColor = green(f'HTML sucessfully extracted - {url}')
             	errorHtml = "OK"
+                
 
-            result = ([url, title, queryInput, errorTitle, html, errorHtml])
+            result = ([url, title, queryInput, errorTitle])
+            resultDict = ({"url":url, "title":title, "queryInput":queryInput, "errorTitle":errorTitle, "html":html, "errorHtml":errorHtml})
+            
             print(yellow(str(count) + " of " + str(numOfURL) + " URLs | " + DateTimePrint()))
             print(yellow("URL: " + result[0]))
             print(titleColor)
+            print(htmlColor)
             print(" ")
             result_list.append(result)
-
+            resultDict_list.append(resultDict)
+            
         print(red("Number of errors:" + str(errorCount)))
         
         FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount)
-        Json2PyMongo(jsonPath, logPath, baseFilename)
+        Json2PyMongo(jsonPath, logPath, baseFilename, resultDict_list)
         SprungeUpload(csvPath, jsonPath, logPath)
-            
+
 if __name__ == "__main__":
     main()
