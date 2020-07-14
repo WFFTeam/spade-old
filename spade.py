@@ -1,5 +1,5 @@
 #SPADE v0.8a
-spadeVersion = "v0.81a"
+spadeVersion = "v0.83a"
 
 import string, argparse, re, unidecode, time, os, sys
 from googlesearch import search
@@ -42,6 +42,7 @@ def main():
                 csvFilename = baseFilename + '.csv'
                 jsonFilename = baseFilename + '.json'
                 logFilename = baseFilename + '.log'
+
                 csvPath = './RESULTS/' + csvFilename
                 jsonPath = './RESULTS/' + jsonFilename
                 logPath = './RESULTS/' + logFilename
@@ -109,54 +110,71 @@ def main():
                     numOfURL = len(url_list)
                     count = i[0]
                     url = i[1]
-                    if "!!ERROR!!" in ScrapeTitle(url):
+
+                    if "!!ERROR!!" in bs4UnifiedScrape(url):
                         title = 'ScrapeTitleError'
-                        errorTitle = ScrapeTitle(url)[0] # FORMAT TITLE
-                        errorUrl = ScrapeTitle(url)[1]
+                        html = 'ScrapeHtmlError'
+                        foundMail = 'ScrapeMailError'
+
+                        errorTitle = bs4UnifiedScrape(url)[0]
+                        errorHtml = bs4UnifiedScrape(url)[0]
+                        errorMail = bs4UnifiedScrape(url)[0]
+                        errorUrl = bs4UnifiedScrape(url)[1]
+
                         errorCount += 1
                         titleColor = red(f'Error: {errorTitle}')
+                        htmlColor = red(f'Error: {errorHtml}')
+                        foundMailColor = red(f'Error: {errorMail}')
+
                     else:
-                        title = re.sub(r'[\n\r\t]*', '', str(ScrapeTitle(url)))
+                        title = re.sub(r'[\n\r\t]*', '', str(bs4UnifiedScrape(url)[0]))
                         WhiteSpaceComb = re.compile(r"\s+")
                         title = WhiteSpaceComb.sub(" ", title).strip()
-                        titleColor = yellow(f'Title: {title}')
-                        errorTitle = "NONE"
+                        titleColor = green(f'Title: {title}')
+                        errorTitle = 'NONE'
 
-                    if "!!ERROR!!" in str(ScrapeHTML(url)):
-                        html = 'ScrapeHtmlError'
-                        errorHtml = ScrapeHTML(url)[0]
-                        htmlColor = red(f'Error: {errorHtml}')
-                    else:
-                        html = ScrapeHTML(url)
-                        errorHtml = "NONE"
-                        htmlColor = green("HTML sucessfully extracted")
+                        html = bs4UnifiedScrape(url)[1]
+                        htmlColor = green(f'HTML sucessfully extracted')
+                        errorHtml = 'NONE'
+
+                        if bs4UnifiedScrape(url)[2] == []:
+                            foundMail = 'NONE'
+                            errorMail = 'NONE'
+                            foundMailColor = yellow(f'No E-Mails found')
+                        else:
+                            foundMail = bs4UnifiedScrape(url)[2]
+                            foundMail_info = str(foundMail).replace("', '"," ").replace("['", "").replace("']", "")
+                            foundMailColor = cyan("E-Mail addresses found: " + foundMail_info)
+                            errorMail = 'NONE'
 
                     jsonTimestamp = json.dumps(dt.now().isoformat())
-                    result = ([url, title, queryInput, errorTitle, jsonTimestamp])
-                    resultDict = ({"timestamp": jsonTimestamp, "url": str(url), "title": str(title), "query": str(queryInput), "html": str(html), "titleError": str(errorTitle), "htmlError": str(errorHtml)})
+                    result = ([url, title, queryInput, errorTitle, foundMail, errorMail, jsonTimestamp])
+                    resultDict = ({"timestamp": jsonTimestamp, "url": url, "title": title, "query": queryInput, "email": foundMail, "html": str(html), "titleError": str(errorTitle), "htmlError": str(errorHtml), "emailError": str(errorMail)})
 
                     print(yellow(str(count) + " of " + str(numOfURL) + " URLs | " + DateTimePrint()))
-                    print(yellow("URL: " + result[0]))
+                    print(green("URL: " + result[0]))
                     print(titleColor)
                     print(htmlColor)
+                    print(foundMailColor)
                     print(" ")
                     result_list.append(result)
                     resultDict_list.append(resultDict)
                 print(red("~~~~~~~~~~~~~~~~~~~~~~~~~~"))
                 print(red("|| ") + yellow(" Number of errors: ") + red(str(errorCount) + " ||"))
                 print(red("~~~~~~~~~~~~~~~~~~~~~~~~~~"))
-                print(" ")
 
                 FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount, resultDict_list)
                 Json2PyMongo(jsonPath, logPath, baseFilename, resultDict_list)
                 SprungeUpload(csvPath, jsonPath, logPath)
-                
+    
+    ################################################################################################################################################################################################################################################            
     # SPECIFY QUERY IN COMMAND
     elif args.query:
         line = args.query
         result_list = []
         url_list =[]
         resultDict_list = []
+        foundMail_list = []
 
         #Filename & Filepath generaton
         queryInput = re.sub(r'[\n\r\t]*', '', line)
@@ -177,7 +195,7 @@ def main():
 #                       tld = 'com',  # The top level domain
 #                       lang = 'en',  # The language
 #                       start = 0,    # First result to retrieve
-#                       stop = 5,    # Last result to retrieve
+                        stop = 10,    # Last result to retrieve
                         num = 10,     # Number of results per page
                         pause = 4.0,  # Lapse between HTTP requests
                         ):
@@ -229,36 +247,52 @@ def main():
             numOfURL = len(url_list)
             count = i[0]
             url = i[1]
-            if "!!ERROR!!" in ScrapeTitle(url):
+
+            if "!!ERROR!!" in bs4UnifiedScrape(url):
                 title = 'ScrapeTitleError'
-                errorTitle = ScrapeTitle(url)[0] # FORMAT TITLE
-                errorUrl = ScrapeTitle(url)[1]
+                html = 'ScrapeHtmlError'
+                foundMail = 'ScrapeMailError'
+
+                errorTitle = bs4UnifiedScrape(url)[0]
+                errorHtml = bs4UnifiedScrape(url)[0]
+                errorMail = bs4UnifiedScrape(url)[0]
+                errorUrl = bs4UnifiedScrape(url)[1]
+
                 errorCount += 1
                 titleColor = red(f'Error: {errorTitle}')
+                htmlColor = red(f'Error: {errorHtml}')
+                foundMailColor = red(f'Error: {errorMail}')
+
             else:
-                title = re.sub(r'[\n\r\t]*', '', str(ScrapeTitle(url)))
+                title = re.sub(r'[\n\r\t]*', '', str(bs4UnifiedScrape(url)[0]))
                 WhiteSpaceComb = re.compile(r"\s+")
                 title = WhiteSpaceComb.sub(" ", title).strip()
-                titleColor = yellow(f'Title: {title}')
-                errorTitle = "NONE"
+                titleColor = green(f'Title: {title}')
+                errorTitle = 'NONE'
 
-            if "!!ERROR!!" in str(ScrapeHTML(url)):
-                html = 'ScrapeHtmlError'
-                errorHtml = ScrapeHTML(url)[0]
-                htmlColor = red(f'Error: {errorHtml}')
-            else:
-                html = ScrapeHTML(url)
+                html = bs4UnifiedScrape(url)[1]
                 htmlColor = green(f'HTML sucessfully extracted')
-                errorHtml = "NONE"
+                errorHtml = 'NONE'
+
+                if bs4UnifiedScrape(url)[2] == []:
+                    foundMail = 'NONE'
+                    errorMail = 'NONE'
+                    foundMailColor = yellow(f'No E-Mails found')
+                else:
+                    foundMail = bs4UnifiedScrape(url)[2]
+                    foundMail_info = str(foundMail).replace("', '"," ").replace("['", "").replace("']", "")
+                    foundMailColor = cyan("E-Mail addresses found: " + foundMail_info)
+                    errorMail = 'NONE'
 
             jsonTimestamp = json.dumps(dt.now().isoformat())
-            result = ([url, title, queryInput, errorTitle, jsonTimestamp])
-            resultDict = ({"timestamp": jsonTimestamp, "url": str(url), "title": str(title), "query": str(queryInput), "html": str(html), "titleError": str(errorTitle), "htmlError": str(errorHtml)})
+            result = ([url, title, queryInput, errorTitle, foundMail, errorMail, jsonTimestamp])
+            resultDict = ({"timestamp": jsonTimestamp, "url": url, "title": title, "query": queryInput, "email": foundMail, "html": str(html), "titleError": str(errorTitle), "htmlError": str(errorHtml), "emailError": str(errorMail)})
             
             print(yellow(str(count) + " of " + str(numOfURL) + " URLs | " + DateTimePrint()))
-            print(yellow("URL: " + result[0]))
+            print(green("URL: " + result[0]))
             print(titleColor)
             print(htmlColor)
+            print(foundMailColor)
             print(" ")
             result_list.append(result)
             resultDict_list.append(resultDict)
