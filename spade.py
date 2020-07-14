@@ -109,7 +109,7 @@ def main():
                     numOfURL = len(url_list)
                     count = i[0]
                     url = i[1]
-                    if "!ERROR!" in ScrapeTitle(url):
+                    if "!!ERROR!!" in ScrapeTitle(url):
                         title = 'ScrapeTitleError'
                         errorTitle = ScrapeTitle(url)[0] # FORMAT TITLE
                         errorUrl = ScrapeTitle(url)[1]
@@ -122,7 +122,7 @@ def main():
                         titleColor = yellow(f'Title: {title}')
                         errorTitle = "NONE"
 
-                    if "!ERROR!" in str(ScrapeHTML(url)):
+                    if "!!ERROR!!" in str(ScrapeHTML(url)):
                         html = 'ScrapeHtmlError'
                         errorHtml = ScrapeHTML(url)[0]
                         htmlColor = red(f'Error: {errorHtml}')
@@ -229,7 +229,7 @@ def main():
             numOfURL = len(url_list)
             count = i[0]
             url = i[1]
-            if "!ERROR!" in ScrapeTitle(url):
+            if "!!ERROR!!" in ScrapeTitle(url):
                 title = 'ScrapeTitleError'
                 errorTitle = ScrapeTitle(url)[0] # FORMAT TITLE
                 errorUrl = ScrapeTitle(url)[1]
@@ -242,7 +242,7 @@ def main():
                 titleColor = yellow(f'Title: {title}')
                 errorTitle = "NONE"
 
-            if "!ERROR!" in str(ScrapeHTML(url)):
+            if "!!ERROR!!" in str(ScrapeHTML(url)):
                 html = 'ScrapeHtmlError'
                 errorHtml = ScrapeHTML(url)[0]
                 htmlColor = red(f'Error: {errorHtml}')
