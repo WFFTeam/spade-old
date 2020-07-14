@@ -35,9 +35,7 @@ def FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, error
         print("Number of errors:" + str(errorCount), file=text_file)
     
     # JSON
-    # outputJson = json.dumps(resultDict_list, sort_keys=True, indent=4, ensure_ascii=False)
     outputJson = json.dumps(resultDict_list, indent=4, ensure_ascii=False)
-    # with open(jsonPath, 'w', encoding='utf8') as jsonFile:
     with open(jsonPath, 'w') as jsonFile:
         jsonFile.write(outputJson)
 

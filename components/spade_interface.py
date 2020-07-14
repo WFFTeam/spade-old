@@ -19,7 +19,7 @@ def cyan(text):
 def clear():
     os.system( 'clear')
 
-# COUNTDOWN FUNCTION *NEED TESTING
+# COUNTDOWN FUNCTION
 def countdown(p,q):
     i=p
     j=q

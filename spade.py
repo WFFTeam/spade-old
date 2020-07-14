@@ -1,5 +1,5 @@
 #SPADE v0.8a
-spadeVersion = "v0.8a"
+spadeVersion = "v0.81a"
 
 import string, argparse, re, unidecode, time, os, sys
 from googlesearch import search
@@ -244,7 +244,6 @@ def main():
 
             if "!ERROR!" in str(ScrapeHTML(url)):
                 html = 'ScrapeHtmlError'
-                print(ScrapeHTML(url)) #DEBUG#
                 errorHtml = ScrapeHTML(url)[0]
                 htmlColor = red(f'Error: {errorHtml}')
             else:
@@ -252,7 +251,6 @@ def main():
                 htmlColor = green(f'HTML sucessfully extracted')
                 errorHtml = "NONE"
 
-#           print(dt.now().isoformat()) #DEBUG#
             jsonTimestamp = json.dumps(dt.now().isoformat())
             result = ([url, title, queryInput, errorTitle, jsonTimestamp])
             resultDict = ({"timestamp": jsonTimestamp, "url": str(url), "title": str(title), "query": str(queryInput), "html": str(html), "titleError": str(errorTitle), "htmlError": str(errorHtml)})
