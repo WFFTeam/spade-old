@@ -18,7 +18,7 @@ def Json2PyMongo(jsonPath, logPath, baseFilename, resultDict_list):
     userDB = 'admin' # Admin DB
     dbhost = '127.0.0.1' # DB host
     dbport = 27017 # DB port
-    dbuser = 'spadeUser' #DB Username
+    dbuser = 'spadeUser' # DB Username
     dbpass = "S1EdE9xxxxAuIII@#!22Dandjop" # DB Password
 
     username = urllib.parse.quote_plus(dbuser)
