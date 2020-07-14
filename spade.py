@@ -4,6 +4,7 @@ spadeVersion = "v0.8a"
 import string, argparse, re, unidecode, time, os, sys
 from googlesearch import search
 from urllib.error import HTTPError
+from datetime import datetime as dt
 
 from components import *
 
@@ -14,14 +15,15 @@ def main():
     parser.add_argument("--start", "-s", help="Set the starting line")
     parser.add_argument("--query", "-q", help="Set Google search query")
     args = parser.parse_args()
+
     # LOAD LIST OF QUERUES FROM FILE
     if args.list:
         queryListArg = args.list
         numOfLines = sum(1 for line in open(queryListArg, 'r'))
         if args.start:
-        	queryListStart = int(args.start) - 1
+            queryListStart = int(args.start) - 1
         else:
-        	queryListStart = 0
+            queryListStart = 0
 
         with open(queryListArg, 'r') as queryList:
             lines = []
@@ -33,8 +35,9 @@ def main():
                 result_list = []
                 resultDict_list = []
                 url_list =[]
+
+                #Filename & Filepath generaton                
                 queryInput = re.sub(r'[\n\r\t]*', '', line)
-                #Filename & Filepath generaton
                 baseFilename = unidecode.unidecode(re.sub(r'\.+', ".", re.sub('[\W_]', '.', queryInput)))[:100]
                 csvFilename = baseFilename + '.csv'
                 jsonFilename = baseFilename + '.json'
@@ -51,11 +54,11 @@ def main():
 #                               tld = 'com',  # The top level domain
 #                               lang = 'en',  # The language
 #                               start = 0,    # First result to retrieve
-#                               stop = 5,    # Last result to retrieve
+                                stop = 5,    # Last result to retrieve
                                 num = 10,     # Number of results per page
                                 pause = 4.0,  # Lapse between HTTP requests
                                 ):
-                        time.sleep(0.2)
+                        time.sleep(0.1)
                         i += 1
                         result = []
                         result = ([i, url])
@@ -64,7 +67,7 @@ def main():
                         print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
                         print(green("SPADE " + spadeVersion))
                         if sL != 0:
-                        	print(yellow(f'Skipping first {args.start} of {numOfLines}'))
+                            print(yellow(f'Skipping first {queryListStart} of {numOfLines} lines'))
 
                         print(cyan("Searching google and collecting URL addresses"))
                         QueryProgress(currentLine, numOfLines, queryInput)
@@ -97,7 +100,7 @@ def main():
                         except Exception as exceptionError:
                             q = 600    
                         countdown(0,q)
-                        main()                        
+                        main() ### OBRATITI PAZNJU NA OVO                        
                         return
                     
                 print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
@@ -106,7 +109,7 @@ def main():
                     numOfURL = len(url_list)
                     count = i[0]
                     url = i[1]
-                    if 'ERROR' in ScrapeTitle(url):
+                    if "!ERROR!" in ScrapeTitle(url):
                         title = 'ScrapeTitleError'
                         errorTitle = ScrapeTitle(url)[0] # FORMAT TITLE
                         errorUrl = ScrapeTitle(url)[1]
@@ -117,19 +120,20 @@ def main():
                         WhiteSpaceComb = re.compile(r"\s+")
                         title = WhiteSpaceComb.sub(" ", title).strip()
                         titleColor = yellow(f'Title: {title}')
-                        errorTitle = "OK"
+                        errorTitle = "NONE"
 
-                    if 'ERROR' in str(ScrapeHTML(url)):
-                    	html = 'ScrapeHtmlError'
-                    	errorHtml = ScrapeHTML(url)[0]
-                    	htmlColor = red(f'Error: {errorHtml}')
+                    if "!ERROR!" in str(ScrapeHTML(url)):
+                        html = 'ScrapeHtmlError'
+                        errorHtml = ScrapeHTML(url)[0]
+                        htmlColor = red(f'Error: {errorHtml}')
                     else:
-                    	html = ScrapeHTML(url)
-                    	errorHtml = "OK"
-                    	htmlColor = green("HTML sucessfully extracted")
+                        html = ScrapeHTML(url)
+                        errorHtml = "NONE"
+                        htmlColor = green("HTML sucessfully extracted")
 
-                    result = ([url, title, queryInput, errorTitle])
-                    resultDict = ({"url":url, "title":title, "queryInput":queryInput, "errorTitle":errorTitle, "html":html, "errorHtml":errorHtml})
+                    jsonTimestamp = json.dumps(dt.now().isoformat())
+                    result = ([url, title, queryInput, errorTitle, jsonTimestamp])
+                    resultDict = ({"timestamp": jsonTimestamp, "url": str(url), "title": str(title), "query": str(queryInput), "html": str(html), "titleError": str(errorTitle), "htmlError": str(errorHtml)})
 
                     print(yellow(str(count) + " of " + str(numOfURL) + " URLs | " + DateTimePrint()))
                     print(yellow("URL: " + result[0]))
@@ -138,10 +142,12 @@ def main():
                     print(" ")
                     result_list.append(result)
                     resultDict_list.append(resultDict)
-                    
-                print(red("Number of errors:" + str(errorCount)))
-                
-                FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount)
+                print(red("~~~~~~~~~~~~~~~~~~~~~~~~~~"))
+                print(red("|| ") + yellow(" Number of errors: ") + red(str(errorCount) + " ||"))
+                print(red("~~~~~~~~~~~~~~~~~~~~~~~~~~"))
+                print(" ")
+
+                FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount, resultDict_list)
                 Json2PyMongo(jsonPath, logPath, baseFilename, resultDict_list)
                 SprungeUpload(csvPath, jsonPath, logPath)
                 
@@ -151,6 +157,7 @@ def main():
         result_list = []
         url_list =[]
         resultDict_list = []
+
         #Filename & Filepath generaton
         queryInput = re.sub(r'[\n\r\t]*', '', line)
         baseFilename = unidecode.unidecode(re.sub(r'\.+', ".", re.sub('[\W_]', '.', queryInput)))[:100]
@@ -170,11 +177,11 @@ def main():
 #                       tld = 'com',  # The top level domain
 #                       lang = 'en',  # The language
 #                       start = 0,    # First result to retrieve
-#                       stop = 5,    # Last result to retrieve
+                        stop = 5,    # Last result to retrieve
                         num = 10,     # Number of results per page
                         pause = 4.0,  # Lapse between HTTP requests
                         ):
-                time.sleep(0.2)
+                time.sleep(0.1)
                 i += 1
                 result = []
                 result = ([i, url])
@@ -212,7 +219,7 @@ def main():
                 except Exception as exceptionError:
                     q = 600    
                 countdown(0,q)
-                main()
+                main() ### OBRATITI PAZNJU NA OVO 
                 return
             
             
@@ -222,7 +229,7 @@ def main():
             numOfURL = len(url_list)
             count = i[0]
             url = i[1]
-            if 'ERROR' in ScrapeTitle(url):
+            if "!ERROR!" in ScrapeTitle(url):
                 title = 'ScrapeTitleError'
                 errorTitle = ScrapeTitle(url)[0] # FORMAT TITLE
                 errorUrl = ScrapeTitle(url)[1]
@@ -233,33 +240,35 @@ def main():
                 WhiteSpaceComb = re.compile(r"\s+")
                 title = WhiteSpaceComb.sub(" ", title).strip()
                 titleColor = yellow(f'Title: {title}')
-                errorTitle = "OK"
+                errorTitle = "NONE"
 
-            if 'ERROR' in str(ScrapeHTML(url)):
-            	html = 'ScrapeHtmlError'
-            	errorHtml = ScrapeHTML(url)[0]
-            	htmlColor = red(f'Error: {errorHtml}')
+            if "!ERROR!" in str(ScrapeHTML(url)):
+                html = 'ScrapeHtmlError'
+                print(ScrapeHTML(url)) #DEBUG#
+                errorHtml = ScrapeHTML(url)[0]
+                htmlColor = red(f'Error: {errorHtml}')
             else:
-            	html = ScrapeHTML(url)
-            	htmlColor = green(f'HTML sucessfully extracted - {url}')
-            	errorHtml = "OK"
-                
+                html = ScrapeHTML(url)
+                htmlColor = green(f'HTML sucessfully extracted')
+                errorHtml = "NONE"
 
-            result = ([url, title, queryInput, errorTitle])
-            resultDict = ({"url":url, "title":title, "queryInput":queryInput, "errorTitle":errorTitle, "html":html, "errorHtml":errorHtml})
+#           print(dt.now().isoformat()) #DEBUG#
+            jsonTimestamp = json.dumps(dt.now().isoformat())
+            result = ([url, title, queryInput, errorTitle, jsonTimestamp])
+            resultDict = ({"timestamp": jsonTimestamp, "url": str(url), "title": str(title), "query": str(queryInput), "html": str(html), "titleError": str(errorTitle), "htmlError": str(errorHtml)})
             
             print(yellow(str(count) + " of " + str(numOfURL) + " URLs | " + DateTimePrint()))
             print(yellow("URL: " + result[0]))
             print(titleColor)
             print(htmlColor)
-#           print(yellow(html)) ### DEBUG
             print(" ")
             result_list.append(result)
             resultDict_list.append(resultDict)
-            
-        print(red("Number of errors:" + str(errorCount)))
-        
-        FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount)
+        print(red("~~~~~~~~~~~~~~~~~~~~~~~~~~"))
+        print(red("|| ") + yellow(" Number of errors: ") + red(str(errorCount) + " ||"))
+        print(red("~~~~~~~~~~~~~~~~~~~~~~~~~~"))
+
+        FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount, resultDict_list)
         Json2PyMongo(jsonPath, logPath, baseFilename, resultDict_list)
         SprungeUpload(csvPath, jsonPath, logPath)
 

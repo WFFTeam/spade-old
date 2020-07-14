@@ -32,7 +32,6 @@ def Json2PyMongo(jsonPath, logPath, baseFilename, resultDict_list):
         data_json = json.load(data_file)
     try:
         db_cm.insert(data_json) # Insert Data
-        db_cm.insert(resultDict_list)
     except Exception as error:
         return
     

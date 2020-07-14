@@ -20,7 +20,7 @@ def ScrapeTitle(url):
     except Exception as error:
         errorUrl = url
         errorNotice = str(error)
-        errorInfo = [errorNotice,errorUrl,'ERROR']
+        errorInfo = [errorNotice,errorUrl,"!ERROR!"]
         return errorInfo
 
 # BeautifulSoup GET HTML
@@ -32,10 +32,11 @@ def ScrapeHTML(url):
         req = Request(url,headers=hdr)
         page = urlopen(req, timeout = 5)
         html = page.read()
-        return html
+        htmlParsed = BeautifulSoup(html.decode('utf-8', 'ignore'), "html.parser")
+        return htmlParsed
 
     except Exception as error:
         errorUrl = url
         errorNotice = str(error)
-        errorInfo = [errorNotice,errorUrl,'ERROR']
+        errorInfo = [errorNotice,errorUrl,"!ERROR!"]
         return errorInfo
