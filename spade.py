@@ -54,7 +54,7 @@ def main():
 #                               tld = 'com',  # The top level domain
 #                               lang = 'en',  # The language
 #                               start = 0,    # First result to retrieve
-                                stop = 5,    # Last result to retrieve
+#                               stop = 5,    # Last result to retrieve
                                 num = 10,     # Number of results per page
                                 pause = 4.0,  # Lapse between HTTP requests
                                 ):
@@ -177,7 +177,7 @@ def main():
 #                       tld = 'com',  # The top level domain
 #                       lang = 'en',  # The language
 #                       start = 0,    # First result to retrieve
-                        stop = 5,    # Last result to retrieve
+#                       stop = 5,    # Last result to retrieve
                         num = 10,     # Number of results per page
                         pause = 4.0,  # Lapse between HTTP requests
                         ):
