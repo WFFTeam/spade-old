@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 from urllib.parse import urlsplit
+from requests_html import HTMLSession
 
 # Unified BeautifulSoup SCRAPING FUNCTION
 def bs4UnifiedScrape(url):
@@ -38,3 +39,21 @@ def bs4UnifiedScrape(url):
 
 # New Request-HTML crawler and scraper
 # def requestsHtmlScrape(url):
+# 	errorUrl = ""
+#     errorCount = 0
+#     try:
+# 		session = HTMLSession()
+# 		r = session.get(url)
+# 		r.html.render()
+
+# 		foundMail = re.findall(r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', r.html.full_text) # Grab all e-mail
+# 		absoluteLinks = r.html.absolute_links # Get all links on a page
+
+# 		htmlResultsList = [ foundMail, absoluteLinks, ]
+# 		return htmlResultsList
+
+# 	except Exception as error:
+#         errorUrl = url
+#         errorNotice = str(error)
+#         errorInfo = [errorNotice,errorUrl,"!!ERROR!!"]
+#         return errorInfo
