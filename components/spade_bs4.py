@@ -24,10 +24,10 @@ def bs4UnifiedScrape(url):
         else:
             path = url
 
-        titleText = str(soup.title.text)                                                ### TITLE VARIABLE
-        parsedHtml = soup                                                               ### HTML VARIABLE
-        foundMail = re.findall(r"[a-z0-9\.\-+_]+@[a-z0-9\.\-+_]+\.com", soup.text, re.I) ### EMAIL VARIABLE
-        resultList = [ titleText, parsedHtml, foundMail]                                ### LISTA OD RESULTATA VARIABLA IZNAD
+        titleText = str(soup.title.text)                                                		### TITLE VARIABLE
+        parsedHtml = soup                                                               		### HTML VARIABLE
+        foundMail = re.findall(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", soup.text, re.I) ### EMAIL VARIABLE
+        resultList = [ titleText, parsedHtml, foundMail]                                		### LISTA OD RESULTATA VARIABLA IZNAD
         return resultList
 
     except Exception as error:
@@ -35,3 +35,6 @@ def bs4UnifiedScrape(url):
         errorNotice = str(error)
         errorInfo = [errorNotice,errorUrl,"!!ERROR!!"]
         return errorInfo
+
+# New Request-HTML crawler and scraper
+# def requestsHtmlScrape(url):
