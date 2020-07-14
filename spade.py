@@ -58,7 +58,7 @@ def main():
                                 num = 10,     # Number of results per page
                                 pause = 4.0,  # Lapse between HTTP requests
                                 ):
-                        time.sleep(0.1)
+                        time.sleep(0.2)
                         i += 1
                         result = []
                         result = ([i, url])
@@ -181,7 +181,7 @@ def main():
                         num = 10,     # Number of results per page
                         pause = 4.0,  # Lapse between HTTP requests
                         ):
-                time.sleep(0.1)
+                time.sleep(0.2)
                 i += 1
                 result = []
                 result = ([i, url])
