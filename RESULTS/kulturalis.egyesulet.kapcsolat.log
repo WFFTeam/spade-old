@@ -1,0 +1,19 @@
+SPADE v0.7a
+Search string: kulturalis egyesulet kapcsolat
+Results saved to: ./RESULTS/kulturalis.egyesulet.kapcsolat.csv
+Total number of results found: 243
+Number of errors:19
+JSON file uploaded to MongoDB host: mongodb://127.0.0.1:27017
+Database name: spadeDB
+Collection name: kulturalis_egyesulet_kapcsolat
+CSV URL: http://sprunge.us/R7agls
+JSON URL: 
+<html><head>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<title>500 Server Error</title>
+</head>
+<body text=#000000 bgcolor=#ffffff>
+<h1>Error: Server Error</h1>
+<h2>The server encountered an error and could not complete your request.<p>Please try again in 30 seconds.</h2>
+<h2></h2>
+</body></html>
