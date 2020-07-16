@@ -5,6 +5,7 @@ import pymongo, string, re, urllib.parse, csv, json, mpu.io, requests
 from .spade_interface import yellow, green, red, cyan 
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
+from .config_db import *
 import warnings # pymongo warning ingore
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -14,17 +15,12 @@ def Json2PyMongo(jsonPath, logPath, baseFilename, resultDict_list):
     print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
     print(yellow("UPLOADING JSON FILE TO MONGODB"))
     collectionName = re.sub('[\W_]', '_', baseFilename)
-    databaseName = "spadeDB" # DB Name
-    userDB = 'admin' # Admin DB
-    dbhost = '127.0.0.1' # DB host
-    dbport = 27017 # DB port
-    dbuser = 'spadeUser' # DB Username
-    dbpass = "S1EdE9xxxxAuIII@#!22Dandjop" # DB Password
-
-    username = urllib.parse.quote_plus(dbuser)
-    password = urllib.parse.quote_plus(dbpass)
     
-    mng_client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/%s' % (username, password, dbhost, dbport, userDB))
+
+    dbuser = urllib.parse.quote_plus(db_u)
+    dbpass = urllib.parse.quote_plus(db_p)
+    
+    mng_client = pymongo.MongoClient('mongodb://%s:%s@%s:%s/%s' % (dbuser, dbpass, dbhost, dbport, userDB))
     mng_db = mng_client[databaseName]
     db_cm = mng_db[collectionName]
 
