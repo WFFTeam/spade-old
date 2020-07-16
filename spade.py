@@ -38,7 +38,8 @@ def main():
 
                 #Filename & Filepath generaton                
                 queryInput = re.sub(r'[\n\r\t]*', '', line)
-                baseFilename = unidecode.unidecode(re.sub(r'\.+', ".", re.sub('[\W_]', '.', queryInput)))[:100]
+                sanInput = unidecode.unidecode(re.sub(r'\.+', ".", re.sub('[\W_]', '.', queryInput)))
+                baseFilename = '.'.join(sanInput.split(".")[:8])
                 csvFilename = baseFilename + '.csv'
                 jsonFilename = baseFilename + '.json'
                 logFilename = baseFilename + '.log'
@@ -55,7 +56,7 @@ def main():
 #                               tld = 'com',  # The top level domain
 #                               lang = 'en',  # The language
 #                               start = 0,    # First result to retrieve
-#                               stop = 5,    # Last result to retrieve
+                                stop = 10,    # Last result to retrieve
                                 num = 10,     # Number of results per page
                                 pause = 4.0,  # Lapse between HTTP requests
                                 ):
@@ -115,6 +116,7 @@ def main():
                         title = 'ScrapeTitleError'
                         html = 'ScrapeHtmlError'
                         foundMail = 'ScrapeMailError'
+                        foundMailFormatted = 'ScrapeMailError'
 
                         errorTitle = bs4UnifiedScrape(url)[0]
                         errorHtml = bs4UnifiedScrape(url)[0]
@@ -140,19 +142,21 @@ def main():
                         if bs4UnifiedScrape(url)[2] == []:
                             foundMail = 'NONE'
                             errorMail = 'NONE'
+                            foundMailFormatted = 'NONE'
                             foundMailColor = yellow(f'No E-Mails found')
                         else:
                             foundMail = bs4UnifiedScrape(url)[2]
-                            foundMail_info = str(foundMail).replace("', '"," ").replace("['", "").replace("']", "")
-                            foundMailColor = cyan("E-Mail addresses found: " + foundMail_info)
+                            foundMailFormatted = str(foundMail).replace("', '"," ").replace("['", "").replace("']", "")
+                            foundMailColor = cyan("E-Mail addresses found: " + foundMailFormatted)
                             errorMail = 'NONE'
 
                     jsonTimestamp = json.dumps(dt.now().isoformat())
-                    result = ([url, title, queryInput, errorTitle, foundMail, errorMail, jsonTimestamp])
+                #   result = ([url, title, queryInput, errorTitle, foundMail, errorMail, jsonTimestamp])
+                    result = ([title, foundMailFormatted, url, queryInput, errorTitle, errorMail, DateTimePrint()])
                     resultDict = ({"timestamp": jsonTimestamp, "url": url, "title": title, "query": queryInput, "email": foundMail, "html": str(html), "titleError": str(errorTitle), "htmlError": str(errorHtml), "emailError": str(errorMail)})
 
                     print(yellow(str(count) + " of " + str(numOfURL) + " URLs | " + DateTimePrint()))
-                    print(green("URL: " + result[0]))
+                    print(green("URL: " + result[2]))
                     print(titleColor)
                     print(htmlColor)
                     print(foundMailColor)
@@ -178,7 +182,8 @@ def main():
 
         #Filename & Filepath generaton
         queryInput = re.sub(r'[\n\r\t]*', '', line)
-        baseFilename = unidecode.unidecode(re.sub(r'\.+', ".", re.sub('[\W_]', '.', queryInput)))[:100]
+        sanInput = unidecode.unidecode(re.sub(r'\.+', ".", re.sub('[\W_]', '.', queryInput)))
+        baseFilename = '.'.join(sanInput.split(".")[:8])
         csvFilename = baseFilename + '.csv'
         jsonFilename = baseFilename + '.json'
         logFilename = baseFilename + '.log'
@@ -252,6 +257,7 @@ def main():
                 title = 'ScrapeTitleError'
                 html = 'ScrapeHtmlError'
                 foundMail = 'ScrapeMailError'
+                foundMailFormatted = 'ScrapeMailError'
 
                 errorTitle = bs4UnifiedScrape(url)[0]
                 errorHtml = bs4UnifiedScrape(url)[0]
@@ -277,19 +283,20 @@ def main():
                 if bs4UnifiedScrape(url)[2] == []:
                     foundMail = 'NONE'
                     errorMail = 'NONE'
+                    foundMailFormatted = 'NONE'
                     foundMailColor = yellow(f'No E-Mails found')
                 else:
                     foundMail = bs4UnifiedScrape(url)[2]
-                    foundMail_info = str(foundMail).replace("', '"," ").replace("['", "").replace("']", "")
-                    foundMailColor = cyan("E-Mail addresses found: " + foundMail_info)
+                    foundMailFormatted = str(foundMail).replace("', '"," ").replace("['", "").replace("']", "")
+                    foundMailColor = cyan("E-Mail addresses found: " + foundMailFormatted)
                     errorMail = 'NONE'
 
             jsonTimestamp = json.dumps(dt.now().isoformat())
-            result = ([url, title, queryInput, errorTitle, foundMail, errorMail, jsonTimestamp])
+            result = ([title, foundMailFormatted, url, queryInput, errorTitle, errorMail, DateTimePrint()])
             resultDict = ({"timestamp": jsonTimestamp, "url": url, "title": title, "query": queryInput, "email": foundMail, "html": str(html), "titleError": str(errorTitle), "htmlError": str(errorHtml), "emailError": str(errorMail)})
             
             print(yellow(str(count) + " of " + str(numOfURL) + " URLs | " + DateTimePrint()))
-            print(green("URL: " + result[0]))
+            print(green("URL: " + result[2]))
             print(titleColor)
             print(htmlColor)
             print(foundMailColor)

@@ -18,7 +18,7 @@ def FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, error
     # HEADERS
     with open(csvPath, 'w', newline='') as csvFile:
         writer = csv.writer(csvFile)
-        writer.writerow([ "Url", "Title", "Query", "Error", "Timestamp" ])
+        writer.writerow([ "Title", "E-Mail", "Url", "Query", "Error-Title", "Error-Mail", "Timestamp" ])
     # CSV
     for i in result_list:
         data = [i]
