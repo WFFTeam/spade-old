@@ -151,7 +151,6 @@ def main():
                             errorMail = 'NONE'
 
                     jsonTimestamp = json.dumps(dt.now().isoformat())
-                #   result = ([url, title, queryInput, errorTitle, foundMail, errorMail, jsonTimestamp])
                     result = ([title, foundMailFormatted, url, queryInput, errorTitle, errorMail, DateTimePrint()])
                     resultDict = ({"timestamp": jsonTimestamp, "url": url, "title": title, "query": queryInput, "email": foundMail, "html": str(html), "titleError": str(errorTitle), "htmlError": str(errorHtml), "emailError": str(errorMail)})
 
