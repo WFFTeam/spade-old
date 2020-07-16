@@ -1,7 +1,7 @@
 ### - spade_interface.py
 ### - Terminal and output functions
 
-import os, string, sys, errno, time
+import os, string, sys, time
 from datetime import datetime
 from termcolor import colored
 

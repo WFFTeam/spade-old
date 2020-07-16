@@ -24,11 +24,11 @@ def bs4UnifiedScrape(url):
             path = url[:url.rfind('/')+1]
         else:
             path = url
-
-        titleText = str(soup.title.text)                                                		### TITLE VARIABLE
-        parsedHtml = soup         
-        foundMail = re.findall(r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', soup.text)                
-        resultList = [ titleText, parsedHtml, foundMail ]                                		### LISTA OD RESULTATA VARIABLA IZNAD
+#       #Title variable
+        titleText = str(soup.title.text)
+        parsedHtml = soup
+        foundMail = re.findall(r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', soup.text)
+        resultList = [ titleText, parsedHtml, foundMail ]
         return resultList
 
     except Exception as error:
@@ -36,25 +36,26 @@ def bs4UnifiedScrape(url):
         errorNotice = str(error)
         errorInfo = [errorNotice,errorUrl,"!!ERROR!!"]
         return errorInfo
+"""
+New Request-HTML crawler and scraper
+def requestsHtmlScrape(url):
+    errorUrl = ""
+    errorCount = 0
+    try:
+      session = HTMLSession()
+      r = session.get(url)
+      r.html.render()
 
-# New Request-HTML crawler and scraper
-# def requestsHtmlScrape(url):
-# 	  errorUrl = ""
-#     errorCount = 0
-#     try:
-# 		session = HTMLSession()
-# 		r = session.get(url)
-# 		r.html.render()
+      foundMail = re.findall(r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', r.html.full_text)
+      absoluteLinks = r.html.absolute_links
 
-# 		foundMail = re.findall(r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', r.html.full_text)
-# 		absoluteLinks = r.html.absolute_links
+      htmlResultsList = [ foundMail, absoluteLinks, ]
+      return htmlResultsList
+      about = r.html.find('#about', first=True)
 
-# 		htmlResultsList = [ foundMail, absoluteLinks, ]
-# 		return htmlResultsList
-#		about = r.html.find('#about', first=True)
-
-# 	except Exception as error:
-#         errorUrl = url
-#         errorNotice = str(error)
-#         errorInfo = [errorNotice,errorUrl,"!!ERROR!!"]
-#         return errorInfo
+  except Exception as error:
+        errorUrl = url
+        errorNotice = str(error)
+        errorInfo = [errorNotice,errorUrl,"!!ERROR!!"]
+        return errorInfo
+"""

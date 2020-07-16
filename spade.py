@@ -5,7 +5,6 @@ import string, argparse, re, unidecode, time, os, sys
 from googlesearch import search
 from urllib.error import HTTPError
 from datetime import datetime as dt
-
 from components import *
 
 
@@ -96,11 +95,13 @@ def main():
                     print(red(err))
                     if err.code == 429:
                         try:
-                            print(cyan("Increasing retry delay by 600 seconds"))
                             q += 600
+                            sL = sL + int(i)
+                            print(cyan("Increasing retry delay by 600 seconds"))
                             print(yellow("Current delay is: ") + red(str(q)))
                         except Exception as exceptionError:
-                            q = 600    
+                            q = 600
+                        print(red('Too many requests; temporarily blocked by Google'))
                         countdown(0,q)
                         main() ### OBRATITI PAZNJU NA OVO                        
                         return
