@@ -135,7 +135,8 @@ def main():
                         title = WhiteSpaceComb.sub(" ", title).strip()
                         titleColor = green(f'Title: {title}')
                         errorTitle = 'NONE'
-
+                        if title == '':
+                            title = 'NONE'
                         html = bs4UnifiedScrape(url)[1]
                         htmlColor = green(f'HTML sucessfully extracted')
                         errorHtml = 'NONE'
