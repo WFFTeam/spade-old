@@ -174,8 +174,7 @@ def main():
                 SprungeUpload(csvPath, jsonPath, logPath)
 
     else:
-        print(red("Argument -l not provided or valid, exiting."))
-        break
+        sys.exit("Argument -l not provided or valid, exiting.") 
 ''' 
     ################################################################################################################################################################################################################################################            
     # SPECIFY QUERY IN COMMAND !!! VERY OUTDATED
