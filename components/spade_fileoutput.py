@@ -28,7 +28,7 @@ def FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, error
             writer.writerows(data)
     # LOG
     with open(logPath, "w") as text_file:
-        print("SPADE RESULTS || " +  result_list[6], file=text_file)
+        print("SPADE RESULTS || " +  str(result_list[6]), file=text_file)
         print("Search string: " + queryInput, file=text_file)
         print("Results saved to: " + csvPath, file=text_file)
         print("Total number of results found: " + str(count), file=text_file)

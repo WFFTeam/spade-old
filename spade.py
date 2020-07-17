@@ -113,16 +113,17 @@ def main():
                     count = i[0]
                     url = i[1]
 
-                    if "!!ERROR!!" in bs4UnifiedScrape(url)[2]:
+                    scrapeResults = bs4UnifiedScrape(url)
+                    if "!!ERROR!!" in scrapeResults[2]:
                         title = 'ScrapeTitleError'
                         html = 'ScrapeHtmlError'
                         foundMail = 'ScrapeMailError'
                         foundMailFormatted = 'ScrapeMailError'
 
-                        errorTitle = bs4UnifiedScrape(url)[0]
-                        errorHtml = bs4UnifiedScrape(url)[0]
-                        errorMail = bs4UnifiedScrape(url)[0]
-                        errorUrl = bs4UnifiedScrape(url)[1]
+                        errorTitle = scrapeResults[0]
+                        errorHtml = scrapeResults[0]
+                        errorMail = scrapeResults[0]
+                        errorUrl = scrapeResults[1]
 
                         errorCount += 1
                         titleColor = red(f'Error: {errorTitle}')
@@ -130,21 +131,19 @@ def main():
                         foundMailColor = red(f'Error: {errorMail}')
 
                     else:
-                        title = re.sub(r'[\n\r\t]*', '', str(bs4UnifiedScrape(url)[0]))
+                        title = re.sub(r'[\n\r\t]*', '', str(scrapeResults[0]))
                         WhiteSpaceComb = re.compile(r"\s+")
                         title = WhiteSpaceComb.sub(" ", title).strip()
                         titleColor = green(f'Title: {title}')
                         errorTitle = 'NONE'
                         if title == '':
                             title = 'NONE'
-                        html = bs4UnifiedScrape(url)[1]
+                        html = scrapeResults[1]
                         htmlColor = green(f'HTML sucessfully extracted')
                         errorHtml = 'NONE'
 
-                        if bs4UnifiedScrape(url)[2] == []:
-                            foundMail = 'NONE'
-                            errorMail = 'NONE'
-                            foundMailFormatted = 'NONE'
+                        if scrapeResults[2] == []:
+                            foundMail, errorMail, foundMailFormatted  = 'NONE'
                             foundMailColor = yellow(f'No E-Mail found')
                         else:
                             foundMail = bs4UnifiedScrape(url)[2]
