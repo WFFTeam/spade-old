@@ -8,6 +8,8 @@ from datetime import datetime as dt
 from components import *
 from components.config_db import *
 
+q = 600
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--list", "-l", help="Set file to read queries from")
@@ -94,6 +96,7 @@ def main():
                     print(red(err))
                     if err.code == 429:
                         try:
+                            global q
                             q += 600
                             sL = sL + int(i)
                             print(cyan("Increasing retry delay by 600 seconds"))
