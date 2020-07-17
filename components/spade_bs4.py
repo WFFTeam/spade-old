@@ -24,17 +24,17 @@ def bs4UnifiedScrape(url):
             path = url[:url.rfind('/')+1]
         else:
             path = url
-#       #Title variable
+
         titleText = str(soup.title.text)
         parsedHtml = soup
         foundMail = re.findall(r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', soup.text)
-        resultList = [ titleText, parsedHtml, foundMail ]
+        resultList = ([titleText, parsedHtml, foundMail])
         return resultList
 
     except Exception as error:
         errorUrl = url
         errorNotice = str(error)
-        errorInfo = [errorNotice,errorUrl,"!!ERROR!!"]
+        errorInfo = ([errorNotice, errorUrl, "!!ERROR!!"])
         return errorInfo
 """
 New Request-HTML crawler and scraper
