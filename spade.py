@@ -29,6 +29,7 @@ def main():
 
         with open(queryListArg, 'r') as queryList:
             lines = []
+            global sL
             sL = int(queryListStart)
             currentLine = 0 + sL
             queryList = queryList.readlines()[sL:]
