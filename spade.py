@@ -12,7 +12,6 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--list", "-l", help="Set file to read queries from")
     parser.add_argument("--start", "-s", help="Set the starting line")
-    parser.add_argument("--query", "-q", help="Set Google search query")
     args = parser.parse_args()
 
     # LOAD LIST OF QUERUES FROM FILE
@@ -173,7 +172,11 @@ def main():
                 FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount, resultDict_list)
                 Json2PyMongo(jsonPath, logPath, baseFilename, resultDict_list)
                 SprungeUpload(csvPath, jsonPath, logPath)
-    
+
+    else:
+        print(red("Argument -l not provided or valid, exiting."))
+        break
+''' 
     ################################################################################################################################################################################################################################################            
     # SPECIFY QUERY IN COMMAND !!! VERY OUTDATED
     elif args.query:
@@ -313,6 +316,6 @@ def main():
         FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount, resultDict_list)
         Json2PyMongo(jsonPath, logPath, baseFilename, resultDict_list)
         SprungeUpload(csvPath, jsonPath, logPath)
-
+'''
 if __name__ == "__main__":
     main()
