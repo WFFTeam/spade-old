@@ -6,7 +6,7 @@ from googlesearch import search
 from urllib.error import HTTPError
 from datetime import datetime as dt
 from components import *
-
+from components.config_db import *
 
 def main():
     parser = argparse.ArgumentParser()
