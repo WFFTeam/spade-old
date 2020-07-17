@@ -157,7 +157,7 @@ def main():
 
                     print(yellow(str(count) + " of " + str(numOfURL) + " URLs | " + DateTimePrint()))
                     print(green("URL: " + result[2]))
-                    if errorTitle = 'NONE':
+                    if errorTitle == 'NONE':
                         print(titleColor)
                         print(htmlColor)
                         print(foundMailColor)
