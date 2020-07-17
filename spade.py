@@ -7,7 +7,7 @@ from urllib.error import HTTPError
 from datetime import datetime as dt
 from components import *
 from components.config_db import *
-
+sL = 0
 q = 600
 
 def main():
@@ -27,6 +27,7 @@ def main():
 
         with open(queryListArg, 'r') as queryList:
             lines = []
+            global sL
             sL = int(queryListStart)
             currentLine = 0 + sL
             queryList = queryList.readlines()[sL:]
@@ -98,7 +99,7 @@ def main():
                     if err.code == 429:
                         try:
                             q += 600
-                            sL = sL + int(i)
+                            sL = sL + currentLine
                             print(cyan("Increasing retry delay by 600 seconds"))
                             print(yellow("Current delay is: ") + red(str(q)))
                         except Exception as exceptionError:
