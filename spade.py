@@ -143,7 +143,8 @@ def main():
                         errorHtml = 'NONE'
 
                         if scrapeResults[2] == []:
-                            foundMail = errorMail = foundMailFormatted  = 'NONE'
+                            foundMail = foundMailFormatted  = 'NONE'
+                            errorMail = "NOT FOUND"
                             foundMailColor = yellow(f'No E-Mail found')
                         else:
                             foundMail = bs4UnifiedScrape(url)[2]
