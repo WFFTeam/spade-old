@@ -55,7 +55,7 @@ def main():
 #                               tld = 'com',  # The top level domain
 #                               lang = 'en',  # The language
 #                               start = 0,    # First result to retrieve
-                                stop = 10,    # Last result to retrieve
+#                               stop = 10,    # Last result to retrieve
                                 num = 10,     # Number of results per page
                                 pause = 4.0,  # Lapse between HTTP requests
                                 ):
@@ -176,7 +176,7 @@ def main():
                 SprungeUpload(csvPath, jsonPath, logPath)
     
     ################################################################################################################################################################################################################################################            
-    # SPECIFY QUERY IN COMMAND
+    # SPECIFY QUERY IN COMMAND !!! VERY OUTDATED
     elif args.query:
         line = args.query
         result_list = []
