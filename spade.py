@@ -84,7 +84,8 @@ def main():
                         print(" ")
                         print(cyan(emptyBar + '<=' + "=" * progBarMult + '=>'))
                         print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
-                        
+                    global q
+                    q = 600    
                         
                 except IndexError as e:
                     print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
@@ -95,6 +96,8 @@ def main():
                     print(green("SPADE " + spadeVersion))
                     print(red(err))
                     if err.code == 429:
+                        global q
+                        if q != 
                         try:
                             global q
                             q += 600
