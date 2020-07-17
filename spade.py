@@ -101,6 +101,8 @@ def main():
                         try:
                             q += 600
                             sL = sL + currentLine
+                            print("current line = " + currentLine)
+                            print("skip lines = " + sL)
                             print(cyan("Increasing retry delay by 600 seconds"))
                             print(yellow("Current delay is: ") + red(str(q)))
                         except Exception as exceptionError:
