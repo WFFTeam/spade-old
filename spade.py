@@ -100,13 +100,13 @@ def main():
                     if err.code == 429:
                         try:
                             q += 600
-                            sL = sL + currentLine
+                            sL = sL + i
                             print(cyan("Increasing retry delay by 600 seconds"))
                             print(yellow("Current delay is: ") + red(str(q)))
                         except Exception as exceptionError:
                             print(red(exceptionError))
                             q = 600
-                        print("current line = " + str(currentLine))
+                        print("processed lines = " + str(i))
                         print("skip lines = " + str(sL))
                         print(red('Too many requests; temporarily blocked by Google'))
                         countdown(0,q)
@@ -135,12 +135,13 @@ def main():
                         WhiteSpaceComb = re.compile(r"\s+")
                         title = WhiteSpaceComb.sub(" ", title).strip()
                         titleColor = green(f'Title: {title}')
-                        errorTitle = 'NONE'
+                        errorTitle = 'OK'
                         if title == '':
                             title = 'NONE'
+                            errorTitle = 'NONE'
                         html = scrapeResults[1]
                         htmlColor = green(f'HTML sucessfully extracted')
-                        errorHtml = 'NONE'
+                        errorHtml = 'OK'
 
                         if scrapeResults[2] == []:
                             foundMail = foundMailFormatted  = 'NONE'
@@ -150,7 +151,7 @@ def main():
                             foundMail = bs4UnifiedScrape(url)[2]
                             foundMailFormatted = str(foundMail).replace("', '"," ").replace("['", "").replace("']", "")
                             foundMailColor = cyan("E-Mail addresses found: " + foundMailFormatted)
-                            errorMail = 'NONE'
+                            errorMail = 'OK'
 
                     jsonTimestamp = json.dumps(dt.now().isoformat())
                     result = ([title, foundMailFormatted, url, queryInput, errorTitle, errorMail, DateTimePrint()])
