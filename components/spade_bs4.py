@@ -20,6 +20,7 @@ def bs4UnifiedScrape(url):
         soup = BeautifulSoup(html.decode('utf-8', 'ignore'), "html.parser")
         urlSplit = urlsplit(url)
         base_url = "{0.scheme}://{0.netloc}".format(urlSplit)
+        
         if '/' in urlSplit.path:
             path = url[:url.rfind('/')+1]
         else:

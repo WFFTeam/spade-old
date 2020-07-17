@@ -114,16 +114,9 @@ def main():
 
                     scrapeResults = bs4UnifiedScrape(url)
                     if "!!ERROR!!" in scrapeResults[2]:
-                        title = 'ScrapeTitleError'
-                        html = 'ScrapeHtmlError'
-                        foundMail = 'ScrapeMailError'
-                        foundMailFormatted = 'ScrapeMailError'
-
-                        errorTitle = scrapeResults[0]
-                        errorHtml = scrapeResults[0]
-                        errorMail = scrapeResults[0]
+                        title = html = foundMail = foundMailFormatted = 'BeautifulSoup error'
+                        errorTitle = errorHtml = errorMail = scrapeResults[0]
                         errorUrl = scrapeResults[1]
-
                         errorCount += 1
                         titleColor = red(f'Error: {errorTitle}')
                         htmlColor = red(f'Error: {errorHtml}')
@@ -142,7 +135,7 @@ def main():
                         errorHtml = 'NONE'
 
                         if scrapeResults[2] == []:
-                            foundMail, errorMail, foundMailFormatted  = 'NONE'
+                            foundMail = errorMail = foundMailFormatted  = 'NONE'
                             foundMailColor = yellow(f'No E-Mail found')
                         else:
                             foundMail = bs4UnifiedScrape(url)[2]
@@ -156,7 +149,6 @@ def main():
 
                     print(yellow(str(count) + " of " + str(numOfURL) + " URLs | " + DateTimePrint()))
                     print(green("URL: " + result[2]))
-                    if errorTitle == 'NONE':
                         print(titleColor)
                         print(htmlColor)
                         print(foundMailColor)
