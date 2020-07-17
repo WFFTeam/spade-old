@@ -113,7 +113,7 @@ def main():
                     count = i[0]
                     url = i[1]
 
-                    if "!!ERROR!!" in bs4UnifiedScrape(url):
+                    if "!!ERROR!!" in bs4UnifiedScrape(url)[2]:
                         title = 'ScrapeTitleError'
                         html = 'ScrapeHtmlError'
                         foundMail = 'ScrapeMailError'
@@ -157,9 +157,12 @@ def main():
 
                     print(yellow(str(count) + " of " + str(numOfURL) + " URLs | " + DateTimePrint()))
                     print(green("URL: " + result[2]))
-                    print(titleColor)
-                    print(htmlColor)
-                    print(foundMailColor)
+                    if errorTitle = 'NONE':
+                        print(titleColor)
+                        print(htmlColor)
+                        print(foundMailColor)
+                    else:
+                        print(titleColor)
                     print(" ")
                     result_list.append(result)
                     resultDict_list.append(resultDict)
