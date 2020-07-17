@@ -26,9 +26,8 @@ def bs4UnifiedScrape(url):
             path = url
 
         titleText = str(soup.title.text)
-        parsedHtml = soup
         foundMail = re.findall(r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', soup.text)
-        resultList = ([titleText, parsedHtml, foundMail])
+        resultList = ([titleText, soup, foundMail])
         return resultList
 
     except Exception as error:

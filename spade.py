@@ -145,7 +145,7 @@ def main():
                             foundMail = 'NONE'
                             errorMail = 'NONE'
                             foundMailFormatted = 'NONE'
-                            foundMailColor = yellow(f'No E-Mails found')
+                            foundMailColor = yellow(f'No E-Mail found')
                         else:
                             foundMail = bs4UnifiedScrape(url)[2]
                             foundMailFormatted = str(foundMail).replace("', '"," ").replace("['", "").replace("']", "")
