@@ -85,7 +85,7 @@ def main():
                         print(cyan(emptyBar + '<=' + "=" * progBarMult + '=>'))
                         print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
                     global q
-                    q = 600    
+                    q = 600
                         
                 except IndexError as e:
                     print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
@@ -97,7 +97,6 @@ def main():
                     print(red(err))
                     if err.code == 429:
                         try:
-                            global q
                             q += 600
                             sL = sL + int(i)
                             print(cyan("Increasing retry delay by 600 seconds"))
