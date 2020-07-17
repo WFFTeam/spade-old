@@ -8,7 +8,7 @@ from datetime import datetime as dt
 from components import *
 from components.config_db import *
 sL = 0
-q = 600
+q = 0
 
 def main():
     parser = argparse.ArgumentParser()
