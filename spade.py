@@ -106,8 +106,8 @@ def main():
                         except Exception as exceptionError:
                             print(red(exceptionError))
                             q = 600
-                        print("current line = " + currentLine)
-                        print("skip lines = " + sL)
+                        print("current line = " + str(currentLine))
+                        print("skip lines = " + str(sL))
                         print(red('Too many requests; temporarily blocked by Google'))
                         countdown(0,q)
                         main() ### OBRATITI PAZNJU NA OVO                        
