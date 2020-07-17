@@ -21,6 +21,7 @@ def main():
         queryListArg = args.list
         numOfLines = sum(1 for line in open(queryListArg, 'r'))
         if args.start:
+            global sL
             if sL == 0:
                 queryListStart = int(args.start) - 1
         else:
@@ -28,7 +29,6 @@ def main():
 
         with open(queryListArg, 'r') as queryList:
             lines = []
-            global sL
             sL = int(queryListStart)
             currentLine = 0 + sL
             queryList = queryList.readlines()[sL:]
