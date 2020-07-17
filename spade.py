@@ -101,12 +101,13 @@ def main():
                         try:
                             q += 600
                             sL = sL + currentLine
-                            print("current line = " + currentLine)
-                            print("skip lines = " + sL)
                             print(cyan("Increasing retry delay by 600 seconds"))
                             print(yellow("Current delay is: ") + red(str(q)))
                         except Exception as exceptionError:
+                            print(red(exceptionError))
                             q = 600
+                        print("current line = " + currentLine)
+                        print("skip lines = " + sL)
                         print(red('Too many requests; temporarily blocked by Google'))
                         countdown(0,q)
                         main() ### OBRATITI PAZNJU NA OVO                        
