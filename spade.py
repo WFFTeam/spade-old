@@ -159,6 +159,7 @@ def main():
 
                     print(yellow(str(count) + " of " + str(numOfURL) + " URLs | " + DateTimePrint()))
                     print(green("URL: " + result[2]))
+                    print(errorTitle) # DEBUG #
                     if errorTitle == 'NONE':
                         print(titleColor)
                         print(htmlColor)
