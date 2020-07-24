@@ -174,7 +174,7 @@ def main():
 
                 FileOutput(result_list, csvPath, jsonPath, logPath, queryInput, count, errorCount, resultDict_list)
                 Json2PyMongo(jsonPath, logPath, baseFilename, resultDict_list)
-                SprungeUpload(csvPath, jsonPath, logPath)
+               #SprungeUpload(csvPath, jsonPath, logPath)
 
     else:
         sys.exit("Argument -l not provided or valid, exiting.") 
