@@ -24,6 +24,8 @@ def main():
             global sL
             if sL == 0:
                 queryListStart = int(args.start) - 1
+            else:
+                queryListStart = int(sL)
         else:
             queryListStart = 0
 
