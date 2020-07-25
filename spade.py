@@ -172,7 +172,8 @@ def main():
                             foundMail_htmlreqColor = red(f'Error: {errorMail_htmlreq}')
 
                     jsonTimestamp = json.dumps(dt.now().isoformat())
-                    foundMail.append(foundMail_htmlreq)
+                    foundMail = foundMail + foundMail_htmlreq
+                    #foundMail.append(foundMail_htmlreq)
                     result = ([title, foundMail, url, foundLinks, queryInput, errorTitle, errorMail, DateTimePrint()])
                     resultDict = ({"timestamp": jsonTimestamp, "url": url, "title": title, "links": foundLinks, "query": queryInput, "email": foundMail, "html": str(html), "titleError": str(errorTitle), "htmlError": str(errorHtml), "emailError": str(errorMail)})
 
