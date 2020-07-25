@@ -11,7 +11,7 @@ from requests_html import HTMLSession
 def requestsHtmlScrape(url):
     errorUrl = ""
     errorCount_htmlreq = 0
-    absoluteLinks = relativeLinks = foundMail = []
+    absoluteLinks = relativeLinks = foundMail = linkList = []
     try:
         session = HTMLSession()
         r = session.get(url)

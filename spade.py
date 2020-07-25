@@ -172,8 +172,30 @@ def main():
                             foundMail_htmlreqColor = red(f'Error: {errorMail_htmlreq}')
 
                     jsonTimestamp = json.dumps(dt.now().isoformat())
-                    foundMail = foundMail + foundMail_htmlreq
-                    #foundMail.append(foundMail_htmlreq)
+                    if type(foundMail) is list:
+                        if type(foundMail_htmlreq) is list:                            
+                            foundMail = foundMail + foundMail_htmlreq
+                        elif type(foundMail_htmlreq) is str:
+                            foundMail = foundMail + [foundMail_htmlreq]
+                        else:
+                            print(red("!!!DEBUG!!!"))
+                            print(type(foundMail))
+                            print(type(foundMail_htmlreq))
+                            print(foundMail)
+                            print(foundMail_htmlreq)
+
+                    elif type(foundMail) is str:
+                        if foundMail == 'NONE':
+                            if foundMail_htmlreq == 'NONE':
+                                foundMail = 'NONE'
+                            else:
+                                foundMail = foundMail_htmlreq
+                        else:
+                            if type(foundMail_htmlreq) is list: 
+                                foundMail = [foundMail] + foundMail_htmlreq
+                            elif type(foundMail_htmlreq) is str:
+                                foundMail = [foundMail] + [foundMail_htmlreq]
+
                     result = ([title, foundMail, url, foundLinks, queryInput, errorTitle, errorMail, DateTimePrint()])
                     resultDict = ({"timestamp": jsonTimestamp, "url": url, "title": title, "links": foundLinks, "query": queryInput, "email": foundMail, "html": str(html), "titleError": str(errorTitle), "htmlError": str(errorHtml), "emailError": str(errorMail)})
 
@@ -182,9 +204,11 @@ def main():
                     if errorTitle == 'OK':
                         print(titleColor)
                         print(htmlColor)
-                        print(foundMailColor)
-                        print(foundMail_htmlreqColor)
-
+                        if foundMailColor == foundMail_htmlreqColor:
+                            print(foundMailColor)
+                        else:
+                            print(foundMailColor)
+                            print(foundMail_htmlreqColor)
                     else:
                         print(titleColor)
                         print(foundMail_htmlreqColor)
