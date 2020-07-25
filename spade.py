@@ -117,6 +117,7 @@ def main():
                     
                 print(green("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = ="))
                 errorCount = 0
+                errorCount_htmlreq = 0
                 for i in url_list:
                     numOfURL = len(url_list)
                     count = i[0]
@@ -155,9 +156,25 @@ def main():
                             foundMailColor = cyan("E-Mail addresses found: " + foundMailFormatted)
                             errorMail = 'OK'
 
+                    scrapeResults_htmlreq = requestsHtmlScrape(url)
+                    if scrapeResults_htmlreq[2] == "OK":
+                        foundMail_htmlreq = scrapeResults_htmlreq[0]
+                        foundMail_htmlreqFormatted = str(foundMail_htmlreq).replace("', '"," ").replace("['", "").replace("']", "")
+                        foundMail_htmlreqColor = cyan("E-Mail addresses found: " + foundMail_htmlreqFormatted)
+                        foundLinks = scrapeResults_htmlreq[1]
+                        errorMail_htmlreq = 'OK'
+                        errorFoundLink = 'OK'
+                    else:
+                        if "!!ERROR!!" in scrapeResults_htmlreq[2]:
+                            foundMail_htmlreq = foundMail_htmlreqFormatted = foundLinks = 'HTML Requests error'
+                            errorMail_htmlreq = errorFoundLink = scrapeResults_htmlreq[0]
+                            errorCount_htmlreq += 1
+                            foundMail_htmlreqColor = red(f'Error: {errorMail_htmlreq}')
+
                     jsonTimestamp = json.dumps(dt.now().isoformat())
-                    result = ([title, foundMailFormatted, url, queryInput, errorTitle, errorMail, DateTimePrint()])
-                    resultDict = ({"timestamp": jsonTimestamp, "url": url, "title": title, "query": queryInput, "email": foundMail, "html": str(html), "titleError": str(errorTitle), "htmlError": str(errorHtml), "emailError": str(errorMail)})
+                    foundMail.append(foundMail_htmlreq)
+                    result = ([title, foundMail, url, foundLinks, queryInput, errorTitle, errorMail, DateTimePrint()])
+                    resultDict = ({"timestamp": jsonTimestamp, "url": url, "title": title, "links": foundLinks, "query": queryInput, "email": foundMail, "html": str(html), "titleError": str(errorTitle), "htmlError": str(errorHtml), "emailError": str(errorMail)})
 
                     print(yellow(str(count) + " of " + str(numOfURL) + " URLs | " + DateTimePrint()))
                     print(green("URL: " + result[2]))
@@ -165,8 +182,12 @@ def main():
                         print(titleColor)
                         print(htmlColor)
                         print(foundMailColor)
+                        print(foundMail_htmlreqColor)
+
                     else:
                         print(titleColor)
+                        print(foundMail_htmlreqColor)
+
                     print(" ")
                     result_list.append(result)
                     resultDict_list.append(resultDict)
